@@ -26,7 +26,7 @@
                 "Shirazsoft\\Gateway\\GatewayServiceProvider"
             ],
             "aliases": {
-                "Debugbar": "Shirazsoft\\Gateway"
+                "Gateway": "Shirazsoft\\Gateway"
             }
         }
     },
