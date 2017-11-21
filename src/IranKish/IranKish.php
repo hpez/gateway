@@ -98,21 +98,18 @@ class IranKish extends PortAbstract implements PortInterface
 		$this->newTransaction();
 
 		$fields = array(
-			'terminalId' => $this->config->get('gateway.mellat.terminalId'),
-			'userName' => $this->config->get('gateway.mellat.username'),
-			'userPassword' => $this->config->get('gateway.mellat.password'),
-			'orderId' => $this->transactionId(),
 			'amount' => $this->amount,
-			'localDate' => $dateTime->format('Ymd'),
-			'localTime' => $dateTime->format('His'),
-			'additionalData' => '',
-			'callBackUrl' => $this->getCallback(),
-			'payerId' => 0,
+			'merchantId' => $this->config->get('gateway.irankish.merchantId'),
+			'invoiceNo' => time(),
+			'paymentId' => time(),
+			'specialPaymentId' => '',
+			'revertURL' => $this->getCallback(),
+			'description' => ''
 		);
 
 		try {
-			$soap = new SoapClient($this->serverUrl);
-			$response = $soap->bpPayRequest($fields);
+			$soap = new SoapClient($this->serverUrl, array('soap_version'   => SOAP_1_1));
+			$response = $soap->MakeToken($fields);
 
 		} catch (\SoapFault $e) {
 			$this->transactionFailed();
@@ -120,7 +117,9 @@ class IranKish extends PortAbstract implements PortInterface
 			throw $e;
 		}
 
-		$response = explode(',', $response->return);
+        dd($response);
+        
+		/*$response = explode(',', $response->return);
 
 		if ($response[0] != '0') {
 			$this->transactionFailed();
@@ -128,7 +127,7 @@ class IranKish extends PortAbstract implements PortInterface
 			throw new IranKishException($response[0]);
 		}
 		$this->refId = $response[1];
-		$this->transactionSetRefId();
+		$this->transactionSetRefId();*/
 	}
 
 	/**
