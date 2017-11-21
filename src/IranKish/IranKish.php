@@ -117,8 +117,7 @@ class IranKish extends PortAbstract implements PortInterface
 			throw $e;
 		}
 
-        dd($response);
-        
+
 		/*$response = explode(',', $response->return);
 
 		if ($response[0] != '0') {
