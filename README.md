@@ -1,4 +1,5 @@
-#ShirazSoft Gateway
+# ShirazSoft Gateway
+
 Available Banks:
  1. MELLAT
  2. SADAD (MELLI)
@@ -11,19 +12,21 @@ Available Banks:
 
 If you have any qustions please ask in our website: http://ShirazSoft.com
  
-##Install
+## Install
  
-###Step 1:
+### Step 1:
 
 ``` bash
 composer require shirazsoft/gateway
 ```
 
-###Step 2:
+### Step 2:
 
 ``` bash
 php artisan vendor:publish --provider="Shirazsoft\Gateway\GatewayServiceProvider"
 ```
  
- 
- 
+### Step 3:
+
+Find config/gateway.php and change it what you need.
+
