@@ -1,0 +1,33 @@
+{
+    "name": "shirazsoft/gateway",
+    "homepage": "https://github.com/larabook/gateway",
+    "description": "A Laravel package for connecting to all Iraninan payment  gateways",
+    "keywords": ["laravel","iran","payment", "gateway", "port", "bank", "pay", "mellat", "saman", "pasargad", "parsian", "sadad", "meli", "payline", "jahanpay", "zarinpal", "iranian-banks", "persian-banks", "pardakht","dargah","shaparak","poolport","ipay"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ali Ghasemzadeh",
+            "email": "it.ghasemzadeh@gmail.com"
+        }
+    ],
+    "require": {
+        "nesbot/carbon": "~1.20"
+    },    
+    "autoload": {
+        "psr-4": {
+            "Shirazsoft\\Gateway\\": "src/",
+            "Shirazsoft\\Gateway\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Shirazsoft\\Gateway\\GatewayServiceProvider"
+            ],
+            "aliases": {
+                "Debugbar": "Shirazsoft\\Gateway"
+            }
+        }
+    },
+}

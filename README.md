@@ -1,0 +1,8 @@
+Available Banks:
+ 1. MELLAT
+ 2. SADAD (MELLI)
+ 3. SAMAN
+ 3. PARSIAN
+ 4. PASARGAD
+ 5. ZARINPAL
+ 6. IRANKISH (Next version)
