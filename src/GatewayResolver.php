@@ -10,6 +10,7 @@ use Shirazsoft\Gateway\Pasargad\Pasargad;
 use Shirazsoft\Gateway\Saman\Saman;
 use Shirazsoft\Gateway\Zarinpal\Zarinpal;
 use Shirazsoft\Gateway\JahanPay\JahanPay;
+use Shirazsoft\Gateway\IranKish\IranKish;
 use Shirazsoft\Gateway\Exceptions\RetryException;
 use Shirazsoft\Gateway\Exceptions\PortNotFoundException;
 use Shirazsoft\Gateway\Exceptions\InvalidRequestException;
@@ -29,7 +30,7 @@ class GatewayResolver
 	/**
 	 * Keep current port driver
 	 *
-	 * @var Mellat|Saman|Sadad|Zarinpal|Payline|JahanPay|Parsian
+	 * @var Mellat|Saman|Sadad|Zarinpal|Payline|JahanPay|Parsian|Irankish
 	 */
 	protected $port;
 
@@ -56,7 +57,7 @@ class GatewayResolver
 	 */
 	public function getSupportedPorts()
 	{
-		return [Enum::MELLAT, Enum::SADAD, Enum::ZARINPAL, Enum::PAYLINE, Enum::JAHANPAY, Enum::PARSIAN, Enum::PASARGAD, Enum::SAMAN];
+		return [Enum::MELLAT, Enum::SADAD, Enum::ZARINPAL, Enum::PAYLINE, Enum::JAHANPAY, Enum::PARSIAN, Enum::PASARGAD, Enum::SAMAN, Enum::IRANKISH];
 	}
 
 	/**
@@ -128,6 +129,8 @@ class GatewayResolver
 	{
 		if ($port InstanceOf Mellat) {
 			$name = Enum::MELLAT;
+		} elseif ($port InstanceOf Irankish) {
+			$name = Enum::IRANKISH;
 		} elseif ($port InstanceOf Parsian) {
 			$name = Enum::PARSIAN;
 		} elseif ($port InstanceOf Saman) {
