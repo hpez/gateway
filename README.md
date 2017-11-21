@@ -1,5 +1,8 @@
 # ShirazSoft Gateway
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/shirazsoft/gateway.svg?style=flat-square)](https://packagist.org/packages/shirazsoft/gateway)
+
+
 Available Banks:
  1. MELLAT
  2. SADAD (MELLI)
