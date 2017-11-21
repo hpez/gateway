@@ -12,6 +12,7 @@ return [
     // Zarinpal gateway
     //--------------------------------
     'zarinpal' => [
+        'title'        => 'درگاه پرداخت زرین پال',
         'merchant-id'  => 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
         'type'         => 'zarin-gate',             // Types: [zarin-gate || normal]
         'callback-url' => '/',
@@ -25,6 +26,7 @@ return [
     // Mellat gateway
     //--------------------------------
     'mellat' => [
+        'title'        => 'درگاه پرداخت بانک ملت',
         'username'     => '',
         'password'     => '',
         'terminalId'   => 0000000,
@@ -35,16 +37,18 @@ return [
     // Saman gateway
     //--------------------------------
     'saman' => [
+        'title'        => 'درگاه پرداخت بانک سامان',
         'merchant'     => '',
         'password'     => '',
-        'callback-url'   => '/',
+        'callback-url' => '/',
     ],
 
     //--------------------------------
     // Payline gateway
     //--------------------------------
     'payline' => [
-        'api' => 'xxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        'title'        => 'درگاه پرداخت Payline',
+        'api'          => 'xxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
         'callback-url' => '/'
     ],
 
@@ -52,6 +56,7 @@ return [
     // Sadad gateway
     //--------------------------------
     'sadad' => [
+        'title'         => 'درگاه پرداخت بانک ملی',
         'merchant'      => '',
         'transactionKey'=> '',
         'terminalId'    => 000000000,
@@ -62,7 +67,8 @@ return [
     // JahanPay gateway
     //--------------------------------
     'jahanpay' => [
-        'api' => 'xxxxxxxxxxx',
+        'title'        => 'درگاه پرداخت JahanPay',
+        'api'          => 'xxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
         'callback-url' => '/'
     ],
 
@@ -70,6 +76,7 @@ return [
     // Parsian gateway
     //--------------------------------
     'parsian' => [
+        'title'        => 'درگاه پرداخت پارسیان',
         'pin'          => 'xxxxxxxxxxxxxxxxxxxx',
         'callback-url' => '/'
     ],
@@ -77,10 +84,20 @@ return [
     // Pasargad gateway
     //--------------------------------
     'pasargad' => [
+        'title'         => 'درگاه پرداخت بانک پاسارگاد',
         'terminalId'    => 000000,
         'merchantId'    => 000000,
         'certificate-path'    => storage_path('gateway/pasargad/certificate.xml'),
         'callback-url' => '/gateway/callback/pasargad'
+    ],
+    //--------------------------------
+    // Irankish gateway
+    //--------------------------------
+    'irankish' => [
+        'title'         => 'درگاه پرداخت ایران کیش',
+        'merchantId'    => 000000,
+        'sha1key'    => 000000,
+        'callback-url' => '/gateway/callback/irankish'
     ],
     //-------------------------------
     // Tables names
