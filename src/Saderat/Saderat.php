@@ -346,9 +346,9 @@ class Saderat extends PortAbstract implements PortInterface
      */
     function getCallback()
     {
-        if (!$this->callbackUrl)
+        if (!$this->callbackUrl) {
             $this->callbackUrl = $this->config->get('gateway.saderat.callback-url');
-
+        }
         return $this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]);
     }
 }
