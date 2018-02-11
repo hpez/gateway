@@ -91,7 +91,7 @@ class IranKish extends PortAbstract implements PortInterface
             'invoiceNo' => $this->transactionId(),
             'paymentId' => $this->transactionId(),
             'specialPaymentId' => $this->transactionId(),
-            'revertURL' => $this->buildQuery($this->config->get('irankish.callback-url'), array('transaction_id' => $this->transactionId)),
+            'revertURL' => $this->getCallback(),
         );
 
         try {
