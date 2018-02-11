@@ -3,8 +3,8 @@
 namespace Shirazsoft\Gateway\IranKish;
 
 use Illuminate\Support\Facades\Input;
-use SoapClient;
 use DateTime;
+use SoapClient;
 use Shirazsoft\Gateway\PortAbstract;
 use Shirazsoft\Gateway\PortInterface;
 
@@ -95,9 +95,8 @@ class IranKish extends PortAbstract implements PortInterface
         );
 
         try {
-            $soap = new SoapClient($this->serverUrl);
+            $soap = new SoapClient($this->serverUrl, array('soap_version'   => SOAP_1_1));
             $response = $soap->MakeToken($fields);
-            dd($response);
         } catch(\SoapFault $e) {
             $this->transactionFailed();
             $this->newLog('SoapFault', $e->getMessage());
