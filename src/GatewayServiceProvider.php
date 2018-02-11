@@ -7,68 +7,64 @@ use Illuminate\Support\ServiceProvider;
 
 class GatewayServiceProvider extends ServiceProvider
 {
-	/**
-	 * Indicates if loading of the provider is deferred.
-	 *
-	 * @var bool
-	 */
-	protected $defer = false;
-
     /**
-     * Actual provider
+     * Indicates if loading of the provider is deferred.
      *
-     * @var \Illuminate\Support\ServiceProvider
+     * @var bool
      */
-    protected $provider;
+    protected $defer = false;
 
     /**
-     * Create a new service provider instance.
+     * Bootstrap the application services.
      *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return void
      */
-    public function __construct($app)
+    public function boot()
     {
-        parent::__construct($app);
+        $config = __DIR__ . '/../config/gateway.php';
+        $migrations = __DIR__ . '/../migrations/';
+        $views = __DIR__ . '/../views/';
 
-        $this->provider = $this->getProvider();
-    }
+        //php artisan vendor:publish --provider=Shirazsoft\Gateway\GatewayServiceProvider --tag=config
+        $this->publishes([
+            $config => config_path('gateway.php'),
+        ], 'config');
 
-	/**
-	 * Bootstrap the application services.
-	 *
-	 * @return void
-	 */
-	public function boot()
-	{
-        if (method_exists($this->provider, 'boot')) {
-            return $this->provider->boot();
+        // php artisan vendor:publish --provider=Shirazsoft\Gateway\GatewayServiceProvider --tag=migrations
+        $this->publishes([
+            $migrations => base_path('database/migrations')
+        ], 'migrations');
+
+
+
+        if (
+            File::glob(base_path('/database/migrations/*create_gateway_status_log_table\.php'))
+            && !File::exists(base_path('/database/migrations/2017_04_05_103357_alter_id_in_transactions_table.php'))
+        ) {
+            @File::copy($migrations.'/2017_04_05_103357_alter_id_in_transactions_table.php',base_path('database/migrations/2017_04_05_103357_alter_id_in_transactions_table.php'));
         }
-	}
+
+
+        $this->loadViewsFrom($views, 'gateway');
+
+        // php artisan vendor:publish --provider=Shirazsoft\Gateway\GatewayServiceProvider --tag=views
+        $this->publishes([
+            $views => base_path('resources/views/vendor/gateway'),
+        ], 'views');
+
+        //$this->mergeConfigFrom( $config,'gateway')
+    }
 
     /**
-     * Return ServiceProvider according to Laravel version
+     * Register the application services.
      *
-     * @return \Intervention\Image\Provider\ProviderInterface
+     * @return void
      */
-    private function getProvider()
+    public function register()
     {
-        if (version_compare(\Illuminate\Foundation\Application::VERSION, '5.0', '<')) {
-            $provider = 'Shirazsoft\Gateway\GatewayServiceProviderLaravel4';
-        } else {
-            $provider = 'Shirazsoft\Gateway\GatewayServiceProviderLaravel5';
-        }
+        $this->app->singleton('gateway', function () {
+            return new GatewayResolver();
+        });
 
-        return new $provider($this->app);
     }
-
-	/**
-	 * Register the application services.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-	    return $this->provider->register();
-	}
 }
