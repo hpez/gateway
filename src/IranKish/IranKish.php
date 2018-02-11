@@ -50,7 +50,7 @@ class IranKish extends PortAbstract implements PortInterface
     public function redirect()
     {
         $refId = $this->refId;
-        $merchantId = $this->config->get('irankish.merchant-id');
+        $merchantId = $this->config->get('gateway.irankish.merchant-id');
 
         return view('gateway::irankish-redirector')->with([
             'refId' => $this->refId,
@@ -86,8 +86,8 @@ class IranKish extends PortAbstract implements PortInterface
 
         $fields = array(
             'amount' => $this->amount,
-            'merchantId' => $this->config->get('irankish.merchant-id'),
-            'description' => $this->config->get('irankish.description'),
+            'merchantId' => $this->config->get('gateway.irankish.merchant-id'),
+            'description' => $this->config->get('gateway.irankish.description'),
             'invoiceNo' => $this->transactionId(),
             'paymentId' => $this->transactionId(),
             'specialPaymentId' => $this->transactionId(),
@@ -97,7 +97,7 @@ class IranKish extends PortAbstract implements PortInterface
         try {
             $soap = new SoapClient($this->serverUrl);
             $response = $soap->MakeToken($fields);
-
+            dd($response);
         } catch(\SoapFault $e) {
             $this->transactionFailed();
             $this->newLog('SoapFault', $e->getMessage());
@@ -148,8 +148,8 @@ class IranKish extends PortAbstract implements PortInterface
         $fields = array(
             'token' => $this->refId,
             'referenceNumber' => $this->trackingCode,
-            'merchantId' => $this->config->get('irankish.merchant-id'),
-            'sha1Key' => $this->config->get('irankish.sha1-key')
+            'merchantId' => $this->config->get('gateway.irankish.merchant-id'),
+            'sha1Key' => $this->config->get('gateway.irankish.sha1-key')
         );
 
         try {
