@@ -2,15 +2,17 @@
 
 namespace Shirazsoft\Gateway;
 
+use Shirazsoft\Gateway\IranKish\IranKish;
 use Shirazsoft\Gateway\Parsian\Parsian;
+use Shirazsoft\Gateway\Paypal\Paypal;
 use Shirazsoft\Gateway\Sadad\Sadad;
 use Shirazsoft\Gateway\Mellat\Mellat;
-use Shirazsoft\Gateway\Payline\Payline;
 use Shirazsoft\Gateway\Pasargad\Pasargad;
+use Shirazsoft\Gateway\Saderat\Saderat;
 use Shirazsoft\Gateway\Saman\Saman;
+use Shirazsoft\Gateway\Asanpardakht\Asanpardakht;
 use Shirazsoft\Gateway\Zarinpal\Zarinpal;
-use Shirazsoft\Gateway\JahanPay\JahanPay;
-use Shirazsoft\Gateway\IranKish\IranKish;
+use Shirazsoft\Gateway\Payir\Payir;
 use Shirazsoft\Gateway\Exceptions\RetryException;
 use Shirazsoft\Gateway\Exceptions\PortNotFoundException;
 use Shirazsoft\Gateway\Exceptions\InvalidRequestException;
@@ -30,7 +32,7 @@ class GatewayResolver
 	/**
 	 * Keep current port driver
 	 *
-	 * @var Mellat|Saman|Sadad|Zarinpal|Payline|JahanPay|Parsian|Irankish
+	 * @var Mellat|Saman|Sadad|Zarinpal|Payir|Parsian
 	 */
 	protected $port;
 
@@ -57,7 +59,19 @@ class GatewayResolver
 	 */
 	public function getSupportedPorts()
 	{
-		return [Enum::MELLAT, Enum::SADAD, Enum::ZARINPAL, Enum::PAYLINE, Enum::JAHANPAY, Enum::PARSIAN, Enum::PASARGAD, Enum::SAMAN, Enum::IRANKISH];
+		return [
+            Enum::MELLAT,
+            Enum::SADAD,
+            Enum::ZARINPAL,
+            Enum::PARSIAN,
+            Enum::PASARGAD,
+            Enum::SAMAN,
+            Enum::PAYPAL,
+            Enum::ASANPARDAKHT,
+            Enum::PAYIR,
+            Enum::IRANKISH,
+            Enum::SADERAT,
+        ];
 	}
 
 	/**
@@ -129,21 +143,25 @@ class GatewayResolver
 	{
 		if ($port InstanceOf Mellat) {
 			$name = Enum::MELLAT;
-		} elseif ($port InstanceOf Irankish) {
-			$name = Enum::IRANKISH;
 		} elseif ($port InstanceOf Parsian) {
 			$name = Enum::PARSIAN;
 		} elseif ($port InstanceOf Saman) {
-            $name = Enum::SAMAN;
-        } elseif ($port InstanceOf Payline) {
-			$name = Enum::PAYLINE;
+			$name = Enum::SAMAN;
 		} elseif ($port InstanceOf Zarinpal) {
 			$name = Enum::ZARINPAL;
-		} elseif ($port InstanceOf JahanPay) {
-			$name = Enum::JAHANPAY;
 		} elseif ($port InstanceOf Sadad) {
 			$name = Enum::SADAD;
-		} elseif(in_array(strtoupper($port),$this->getSupportedPorts())){
+		} elseif ($port InstanceOf Asanpardakht) {
+			$name = Enum::ASANPARDAKHT;
+		} elseif ($port InstanceOf Paypal) {
+			$name = Enum::PAYPAL;
+		} elseif ($port InstanceOf Payir) {
+            $name = Enum::PAYIR;
+        } elseif ($port InstanceOf IranKish) {
+            $name = Enum::IRANKISH;
+        } elseif ($port InstanceOf Saderat) {
+            $name = Enum::SADERAT;
+        }  elseif(in_array(strtoupper($port),$this->getSupportedPorts())){
 			$port=ucfirst(strtolower($port));
 			$name=strtoupper($port);
 			$class=__NAMESPACE__.'\\'.$port.'\\'.$port;

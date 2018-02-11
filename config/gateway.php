@@ -12,7 +12,6 @@ return [
     // Zarinpal gateway
     //--------------------------------
     'zarinpal' => [
-        'title'        => 'درگاه پرداخت زرین پال',
         'merchant-id'  => 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
         'type'         => 'zarin-gate',             // Types: [zarin-gate || normal]
         'callback-url' => '/',
@@ -26,7 +25,6 @@ return [
     // Mellat gateway
     //--------------------------------
     'mellat' => [
-        'title'        => 'درگاه پرداخت بانک ملت',
         'username'     => '',
         'password'     => '',
         'terminalId'   => 0000000,
@@ -37,18 +35,16 @@ return [
     // Saman gateway
     //--------------------------------
     'saman' => [
-        'title'        => 'درگاه پرداخت بانک سامان',
         'merchant'     => '',
         'password'     => '',
-        'callback-url' => '/',
+        'callback-url'   => '/',
     ],
 
     //--------------------------------
-    // Payline gateway
+    // PayIr gateway
     //--------------------------------
-    'payline' => [
-        'title'        => 'درگاه پرداخت Payline',
-        'api'          => 'xxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+    'payir'    => [
+        'api'          => 'xxxxxxxxxxxxxxxxxxxx',
         'callback-url' => '/'
     ],
 
@@ -56,27 +52,16 @@ return [
     // Sadad gateway
     //--------------------------------
     'sadad' => [
-        'title'         => 'درگاه پرداخت بانک ملی',
         'merchant'      => '',
         'transactionKey'=> '',
         'terminalId'    => 000000000,
         'callback-url'  => '/'
     ],
-
-    //--------------------------------
-    // JahanPay gateway
-    //--------------------------------
-    'jahanpay' => [
-        'title'        => 'درگاه پرداخت JahanPay',
-        'api'          => 'xxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-        'callback-url' => '/'
-    ],
-
+    
     //--------------------------------
     // Parsian gateway
     //--------------------------------
     'parsian' => [
-        'title'        => 'درگاه پرداخت پارسیان',
         'pin'          => 'xxxxxxxxxxxxxxxxxxxx',
         'callback-url' => '/'
     ],
@@ -84,23 +69,72 @@ return [
     // Pasargad gateway
     //--------------------------------
     'pasargad' => [
-        'title'         => 'درگاه پرداخت بانک پاسارگاد',
         'terminalId'    => 000000,
         'merchantId'    => 000000,
         'certificate-path'    => storage_path('gateway/pasargad/certificate.xml'),
         'callback-url' => '/gateway/callback/pasargad'
     ],
+
     //--------------------------------
-    // Irankish gateway
+    // Asan Pardakht gateway
     //--------------------------------
-    'irankish' => [
-        'title'         => 'درگاه پرداخت ایران کیش',
-        'merchantId'    => 000000,
-        'sha1key'    => 000000,
-        'callback-url' => '/gateway/callback/irankish'
+    'asanpardakht' => [
+        'merchantId'     => '',
+        'merchantConfigId'     => '',
+        'username' => '',
+        'password' => '',
+        'key' => '',
+        'iv' => '',
+        'callback-url'   => '/',
     ],
+
+    //--------------------------------
+    // Paypal gateway
+    //--------------------------------
+    'paypal'   => [
+        // Default product name that appear on paypal payment items
+        'default_product_name' => 'My Product',
+        'default_shipment_price' => 0,
+        // set your paypal credential
+        'client_id' => 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        'secret'    => 'xxxxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+        'settings'  => [
+            'mode'                   => 'sandbox', //'sandbox' or 'live'
+            'http.ConnectionTimeOut' => 30,
+            'log.LogEnabled'         => true,
+            'log.FileName'           => storage_path() . '/logs/paypal.log',
+            /**
+             * Available option 'FINE', 'INFO', 'WARN' or 'ERROR'
+             *
+             * Logging is most verbose in the 'FINE' level and decreases as you
+             * proceed towards ERROR
+             */
+            'call_back_url'          => '/gateway/callback/paypal',
+            'log.LogLevel'           => 'FINE'
+
+        ]
+    ],
+    //--------------------------------
+    // IranKish gateway
+    //--------------------------------
+    'irankish' => array(
+        'merchant-id' => 'xxxx',
+        'sha1-key' => 'xxxxxxxxxxxxxxxxxxxx',
+        'description' => 'description',
+        'callback-url' => 'http://example.org/result'
+    ),
+    //--------------------------------
+    // Saderat gateway
+    //--------------------------------
+    'saderat' => array(
+        'merchant-id' => '999999999999999',
+        'terminal-id' => '99999999',
+        'public-key' => storage_path('/saderat-public-key.pem'),
+        'private-key' => storage_path('/saderat-private-key.pem'),
+        'callback-url' => 'http://example.org/result'
+    ),
     //-------------------------------
     // Tables names
     //--------------------------------
-    'table'=> 'gateway_transactions',
+    'table'    => 'gateway_transactions',
 ];

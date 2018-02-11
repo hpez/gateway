@@ -31,8 +31,11 @@ class CreateGatewayTransactionsTable extends Migration
 				Enum::PAYLINE,
 				Enum::SADAD,
 				Enum::ZARINPAL,
-                Enum::SAMAN,
-                Enum::IRANKISH
+				Enum::SAMAN,
+				Enum::ASANPARDAKHT,
+				Enum::PAYPAL,
+                Enum::IRANKISH,
+                Enum::SADERAT
 			]);
 			$table->decimal('price', 15, 2);
 			$table->string('ref_id', 100)->nullable();

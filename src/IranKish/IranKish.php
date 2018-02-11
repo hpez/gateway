@@ -2,231 +2,196 @@
 
 namespace Shirazsoft\Gateway\IranKish;
 
-use DateTime;
 use Illuminate\Support\Facades\Input;
-use Shirazsoft\Gateway\Enum;
+use DateTime;
 use SoapClient;
 use Shirazsoft\Gateway\PortAbstract;
 use Shirazsoft\Gateway\PortInterface;
 
 class IranKish extends PortAbstract implements PortInterface
 {
-	/**
-	 * Address of main SOAP server
-	 *
-	 * @var string
-	 */
-	protected $serverUrl = 'https://ikc.shaparak.ir/XToken/Tokens.xml';
+    /**
+     * Address of main server
+     *
+     * @var string
+     */
+    protected $serverUrl = 'https://ikc.shaparak.ir/TToken/Tokens.xml';
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function set($amount)
-	{
-		$this->amount = $amount;
+    /**
+     * Address of SOAP server for verify payment
+     *
+     * @var string
+     */
+    protected $serverVerifyUrl = 'https://ikc.shaparak.ir/TVerify/Verify.xml';
 
-		return $this;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function set($amount)
+    {
+        $this->amount = $amount;
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function ready()
-	{
-		$this->sendPayRequest();
+        return $this;
+    }
 
-		return $this;
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function ready()
+    {
+        $this->sendPayRequest();
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function redirect()
-	{
-		$refId = $this->refId;
+        return $this;
+    }
 
-		return view('gateway::irankish-redirector')->with(compact('refId'));
-	}
+    /**
+     * {@inheritdoc}
+     */
+    public function redirect()
+    {
+        $refId = $this->refId;
+        $merchantId = $this->config->get('irankish.merchant-id');
 
-	/**
-	 * {@inheritdoc}
-	 */
-	public function verify($transaction)
-	{
-		parent::verify($transaction);
+        return view('gateway::irankish-redirector')->with([
+            'refId' => $this->refId,
+            'merchantId' => $merchantId,
+        ]);
+    }
 
-		$this->userPayment();
-		$this->verifyPayment();
-		$this->settleRequest();
+    /**
+     * {@inheritdoc}
+     */
+    public function verify($transaction)
+    {
+        parent::verify($transaction);
 
-		return $this;
-	}
+        $this->userPayment();
+        $this->verifyPayment();
 
-	/**
-	 * Sets callback url
-	 * @param $url
-	 */
-	function setCallback($url)
-	{
-		$this->callbackUrl = $url;
-		return $this;
-	}
+        return $this;
+    }
 
-	/**
-	 * Gets callback url
-	 * @return string
-	 */
-	function getCallback()
-	{
-		if (!$this->callbackUrl)
-			$this->callbackUrl = $this->config->get('gateway.irankish.callback-url');
+    /**
+     * Send pay request to server
+     *
+     * @return void
+     *
+     * @throws IranKishException
+     */
+    protected function sendPayRequest()
+    {
+        $dateTime = new DateTime();
 
-		return $this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]);
-	}
+        $this->newTransaction();
 
-	/**
-	 * Send pay request to server
-	 *
-	 * @return void
-	 *
-	 * @throws IranKishException
-	 */
-	protected function sendPayRequest()
-	{
-		$dateTime = new DateTime();
+        $fields = array(
+            'amount' => $this->amount,
+            'merchantId' => $this->config->get('irankish.merchant-id'),
+            'description' => $this->config->get('irankish.description'),
+            'invoiceNo' => $this->transactionId(),
+            'paymentId' => $this->transactionId(),
+            'specialPaymentId' => $this->transactionId(),
+            'revertURL' => $this->buildQuery($this->config->get('irankish.callback-url'), array('transaction_id' => $this->transactionId)),
+        );
 
-		$this->newTransaction();
+        try {
+            $soap = new SoapClient($this->serverUrl, $this->config);
+            $response = $soap->MakeToken($fields);
 
-		$fields = array(
-			'amount' => $this->amount,
-			'merchantId' => $this->config->get('gateway.irankish.merchantId'),
-			'invoiceNo' => time(),
-			'paymentId' => time(),
-			'specialPaymentId' => '',
-			'revertURL' => $this->getCallback(),
-			'description' => ''
-		);
+        } catch(\SoapFault $e) {
+            $this->transactionFailed();
+            $this->newLog('SoapFault', $e->getMessage());
+            throw $e;
+        }
 
-		try {
-			$soap = new SoapClient($this->serverUrl, array('soap_version'   => SOAP_1_1));
-			$response = $soap->MakeToken($fields);
+        if ($response->MakeTokenResult->result == false) {
+            $this->transactionFailed();
+            $this->newLog($response->MakeTokenResult->result, $response->MakeTokenResult->message);
+            throw new IranKishException;
+        }
+        $this->refId = $response->MakeTokenResult->token;
+        $this->transactionSetRefId($this->transactionId);
+    }
 
-		} catch (\SoapFault $e) {
-			$this->transactionFailed();
-			$this->newLog('SoapFault', $e->getMessage());
-			throw $e;
-		}
+    /**
+     * Check user payment
+     *
+     * @return bool
+     *
+     * @throws IranKishException
+     */
+    protected function userPayment()
+    {
+        $this->refId = Input::get('token');
+        $this->trackingCode = Input::get('referenceId');
+        $resultCode = Input::get('resultCode');
 
+        if ($resultCode == '100') {
+            return true;
+        }
 
-		/*$response = explode(',', $response->return);
+        $this->transactionFailed();
+        $this->newLog($resultCode, @IranKishException::$errors[$resultCode]);
+        throw new IranKishException($resultCode);
+    }
 
-		if ($response[0] != '0') {
-			$this->transactionFailed();
-			$this->newLog($response[0], IranKishException::$errors[$response[0]]);
-			throw new IranKishException($response[0]);
-		}
-		$this->refId = $response[1];
-		$this->transactionSetRefId();*/
-	}
+    /**
+     * Verify user payment from bank server
+     *
+     * @return bool
+     *
+     * @throws IranKishException
+     * @throws SoapFault
+     */
+    protected function verifyPayment()
+    {
+        $fields = array(
+            'token' => $this->refId,
+            'referenceNumber' => $this->trackingCode,
+            'merchantId' => $this->config->get('irankish.merchant-id'),
+            'sha1Key' => $this->config->get('irankish.sha1-key')
+        );
 
-	/**
-	 * Check user payment
-	 *
-	 * @return bool
-	 *
-	 * @throws IranKishException
-	 */
-	protected function userPayment()
-	{
-		$this->refId = Input::get('RefId');
-		$this->trackingCode = Input::get('SaleReferenceId');
-		$this->cardNumber = Input::get('CardHolderPan');
-		$payRequestResCode = Input::get('ResCode');
+        try {
+            $soap = new SoapClient($this->serverVerifyUrl, $this->config);
+            $response = $soap->KicccPaymentsVerification($fields);
 
-		if ($payRequestResCode == '0') {
-			return true;
-		}
+        } catch(\SoapFault $e) {
+            $this->transactionFailed();
+            $this->newLog('SoapFault', $e->getMessage());
+            throw $e;
+        }
 
-		$this->transactionFailed();
-		$this->newLog($payRequestResCode, @IranKishException::$errors[$payRequestResCode]);
-		throw new IranKishException($payRequestResCode);
-	}
+        $response = floatval($response->KicccPaymentsVerificationResult);
 
-	/**
-	 * Verify user payment from bank server
-	 *
-	 * @return bool
-	 *
-	 * @throws IranKishException
-	 * @throws SoapFault
-	 */
-	protected function verifyPayment()
-	{
-		$fields = array(
-			'terminalId' => $this->config->get('gateway.mellat.terminalId'),
-			'userName' => $this->config->get('gateway.mellat.username'),
-			'userPassword' => $this->config->get('gateway.mellat.password'),
-			'orderId' => $this->transactionId(),
-			'saleOrderId' => $this->transactionId(),
-			'saleReferenceId' => $this->trackingCode()
-		);
+        if ($response > 0) {
+            $this->transactionSucceed();
+            $this->newLog('100', Enum::TRANSACTION_SUCCEED_TEXT);
+            return true;
+        } else {
+            $this->transactionFailed();
+            $this->newLog($response, @IranKishException::$errors[$response]);
+            throw new IranKishException($response);
+        }
+    }
 
-		try {
-			$soap = new SoapClient($this->serverUrl);
-			$response = $soap->bpVerifyRequest($fields);
+    /**
+     * Sets callback url
+     *
+     * @return string
+     */
+    public function setCallback($url)
+    {
+        // TODO: Implement setCallback() method.
+    }
 
-		} catch (\SoapFault $e) {
-			$this->transactionFailed();
-			$this->newLog('SoapFault', $e->getMessage());
-			throw $e;
-		}
-
-		if ($response->return != '0') {
-			$this->transactionFailed();
-			$this->newLog($response->return, IranKishException::$errors[$response->return]);
-			throw new IranKishException($response->return);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Send settle request
-	 *
-	 * @return bool
-	 *
-	 * @throws IranKishException
-	 * @throws SoapFault
-	 */
-	protected function settleRequest()
-	{
-		$fields = array(
-			'terminalId' => $this->config->get('gateway.mellat.terminalId'),
-			'userName' => $this->config->get('gateway.mellat.username'),
-			'userPassword' => $this->config->get('gateway.mellat.password'),
-			'orderId' => $this->transactionId(),
-			'saleOrderId' => $this->transactionId(),
-			'saleReferenceId' => $this->trackingCode
-		);
-
-		try {
-			$soap = new SoapClient($this->serverUrl);
-			$response = $soap->bpSettleRequest($fields);
-
-		} catch (\SoapFault $e) {
-			$this->transactionFailed();
-			$this->newLog('SoapFault', $e->getMessage());
-			throw $e;
-		}
-
-		if ($response->return == '0' || $response->return == '45') {
-			$this->transactionSucceed();
-			$this->newLog($response->return, Enum::TRANSACTION_SUCCEED_TEXT);
-			return true;
-		}
-
-		$this->transactionFailed();
-		$this->newLog($response->return, IranKishException::$errors[$response->return]);
-		throw new IranKishException($response->return);
-	}
+    /**
+     * Gets callback url
+     *
+     * @return string
+     */
+    public function getCallback()
+    {
+        // TODO: Implement getCallback() method.
+    }
 }

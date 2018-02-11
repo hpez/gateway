@@ -11,9 +11,13 @@ class Enum
 	const JAHANPAY = 'JAHANPAY';
 	const PARSIAN = 'PARSIAN';
 	const PASARGAD = 'PASARGAD';
-    const SAMAN = 'SAMAN';
+	const SAMAN = 'SAMAN';
+	const ASANPARDAKHT = 'ASANPARDAKHT';
+	const PAYPAL = 'PAYPAL';
+  	const PAYIR = 'PAYIR';
     const IRANKISH = 'IRANKISH';
-
+    const SADERAT = 'SADERAT';
+	
 	/**
 	 * Status code for status field in poolport_transactions table
 	 */
