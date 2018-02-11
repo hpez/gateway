@@ -177,21 +177,23 @@ class IranKish extends PortAbstract implements PortInterface
 
     /**
      * Sets callback url
-     *
-     * @return string
+     * @param $url
      */
-    public function setCallback($url)
+    function setCallback($url)
     {
-        // TODO: Implement setCallback() method.
+        $this->callbackUrl = $url;
+        return $this;
     }
 
     /**
      * Gets callback url
-     *
      * @return string
      */
-    public function getCallback()
+    function getCallback()
     {
-        // TODO: Implement getCallback() method.
+        if (!$this->callbackUrl)
+            $this->callbackUrl = $this->config->get('gateway.irankish.callback-url');
+
+        return $this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]);
     }
 }
