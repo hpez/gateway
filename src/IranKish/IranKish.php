@@ -95,7 +95,7 @@ class IranKish extends PortAbstract implements PortInterface
         );
 
         try {
-            $soap = new \SoapClient($this->serverUrl, $this->config);
+            $soap = new SoapClient($this->serverUrl, $this->config);
             $response = $soap->MakeToken($fields);
 
         } catch(\SoapFault $e) {
@@ -153,7 +153,7 @@ class IranKish extends PortAbstract implements PortInterface
         );
 
         try {
-            $soap = new \SoapClient($this->serverVerifyUrl, $this->config);
+            $soap = new SoapClient($this->serverVerifyUrl, $this->config);
             $response = $soap->KicccPaymentsVerification($fields);
 
         } catch(\SoapFault $e) {
