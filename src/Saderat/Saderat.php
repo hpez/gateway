@@ -111,7 +111,7 @@ class Saderat extends PortAbstract implements PortInterface
 
         try {
             // Disable SSL
-            $soap = new SoapClient($this->serverUrl, $this->config, array("stream_context" => stream_context_create(
+            $soap = new \SoapClient($this->serverUrl, $this->config, array("stream_context" => stream_context_create(
                 array(
                     'ssl' => array(
                         'verify_peer'       => false,
@@ -287,7 +287,7 @@ class Saderat extends PortAbstract implements PortInterface
 
         try {
             // Disable SSL
-            $soap = new SoapClient($this->verifyUrl, $this->config, array("stream_context" => stream_context_create(
+            $soap = new \SoapClient($this->verifyUrl, $this->config, array("stream_context" => stream_context_create(
                 array(
                     'ssl' => array(
                         'verify_peer'       => false,
