@@ -15,14 +15,14 @@ class IranKish extends PortAbstract implements PortInterface
      *
      * @var string
      */
-    protected $serverUrl = 'https://ikc.shaparak.ir/TToken/Tokens.xml';
+    protected $serverUrl = 'https://ikc.shaparak.ir/XToken/Tokens.xml';
 
     /**
      * Address of SOAP server for verify payment
      *
      * @var string
      */
-    protected $serverVerifyUrl = 'https://ikc.shaparak.ir/TVerify/Verify.xml';
+    protected $serverVerifyUrl = 'https://ikc.shaparak.ir/XVerify/Verify.xml';
 
     /**
      * {@inheritdoc}
@@ -51,7 +51,6 @@ class IranKish extends PortAbstract implements PortInterface
     {
         $refId = $this->refId;
         $merchantId = $this->config->get('gateway.irankish.merchant-id');
-
         return view('gateway::irankish-redirector')->with([
             'refId' => $this->refId,
             'merchantId' => $merchantId,
