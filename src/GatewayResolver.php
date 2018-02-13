@@ -2,7 +2,7 @@
 
 namespace Shirazsoft\Gateway;
 
-use Shirazsoft\Gateway\IranKish\IranKish;
+use Shirazsoft\Gateway\Irankish\Irankish;
 use Shirazsoft\Gateway\Parsian\Parsian;
 use Shirazsoft\Gateway\Paypal\Paypal;
 use Shirazsoft\Gateway\Sadad\Sadad;
@@ -157,7 +157,7 @@ class GatewayResolver
 			$name = Enum::PAYPAL;
 		} elseif ($port InstanceOf Payir) {
             $name = Enum::PAYIR;
-        } elseif ($port InstanceOf IranKish) {
+        } elseif ($port InstanceOf Irankish) {
             $name = Enum::IRANKISH;
         } elseif ($port InstanceOf Saderat) {
             $name = Enum::SADERAT;

@@ -1,8 +1,8 @@
 <?php
 
-namespace Shirazsoft\Gateway\IranKish;
+namespace Shirazsoft\Gateway\Irankish;
 
-class IranKishException extends \Exception
+class IrankishException extends \Exception
 {
     public static $errors = array(
         100 => 'تراکنش با موفقیت انجام شد',

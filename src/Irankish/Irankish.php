@@ -1,6 +1,6 @@
 <?php
 
-namespace Shirazsoft\Gateway\IranKish;
+namespace Shirazsoft\Gateway\Irankish;
 
 use Illuminate\Support\Facades\Input;
 use DateTime;
@@ -9,7 +9,7 @@ use Shirazsoft\Gateway\PortAbstract;
 use Shirazsoft\Gateway\PortInterface;
 use Shirazsoft\Gateway\Enum;
 
-class IranKish extends PortAbstract implements PortInterface
+class Irankish extends PortAbstract implements PortInterface
 {
     /**
      * Address of main server
@@ -76,7 +76,7 @@ class IranKish extends PortAbstract implements PortInterface
      *
      * @return void
      *
-     * @throws IranKishException
+     * @throws IrankishException
      */
     protected function sendPayRequest()
     {
@@ -106,7 +106,7 @@ class IranKish extends PortAbstract implements PortInterface
         if ($response->MakeTokenResult->result == false) {
             $this->transactionFailed();
             $this->newLog($response->MakeTokenResult->result, $response->MakeTokenResult->message);
-            throw new IranKishException;
+            throw new IrankishException;
         }
         $this->refId = $response->MakeTokenResult->token;
         $this->transactionSetRefId($this->transactionId);
@@ -117,7 +117,7 @@ class IranKish extends PortAbstract implements PortInterface
      *
      * @return bool
      *
-     * @throws IranKishException
+     * @throws IrankishException
      */
     protected function userPayment()
     {
@@ -130,8 +130,8 @@ class IranKish extends PortAbstract implements PortInterface
         }
 
         $this->transactionFailed();
-        $this->newLog($resultCode, @IranKishException::$errors[$resultCode]);
-        throw new IranKishException($resultCode);
+        $this->newLog($resultCode, @IrankishException::$errors[$resultCode]);
+        throw new IrankishException($resultCode);
     }
 
     /**
@@ -139,7 +139,7 @@ class IranKish extends PortAbstract implements PortInterface
      *
      * @return bool
      *
-     * @throws IranKishException
+     * @throws IrankishException
      * @throws SoapFault
      */
     protected function verifyPayment()
@@ -169,8 +169,8 @@ class IranKish extends PortAbstract implements PortInterface
             return true;
         } else {
             $this->transactionFailed();
-            $this->newLog($response, @IranKishException::$errors[$response]);
-            throw new IranKishException($response);
+            $this->newLog($response, @IrankishException::$errors[$response]);
+            throw new IrankishException($response);
         }
     }
 
