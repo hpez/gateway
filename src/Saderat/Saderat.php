@@ -111,14 +111,7 @@ class Saderat extends PortAbstract implements PortInterface
 
         try {
             // Disable SSL
-            $soap = new \SoapClient($this->serverUrl, $this->config, array("stream_context" => stream_context_create(
-                array(
-                    'ssl' => array(
-                        'verify_peer'       => false,
-                        'verify_peer_name'  => false,
-                    )
-                )
-            )));
+            $soap = new \SoapClient($this->serverUrl);
             $response = $soap->reservation($fields);
 
         } catch(\SoapFault $e) {
@@ -152,8 +145,25 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function setKeys()
     {
-        $this->publicKey = openssl_pkey_get_public($this->config->get('gateway.saderat.public-key'));
-        $this->privateKey = openssl_pkey_get_private($this->config->get('gateway.saderat.private-key'));
+        $pub_key = file_get_contents($this->config->get('gateway.saderat.public-key'));
+        if (strpos($pub_key, '-----BEGIN PUBLIC KEY-----') === false)
+            $pub_key = "-----BEGIN PUBLIC KEY-----\n" . $pub_key;
+
+        if (strpos($pub_key, '-----END PUBLIC KEY-----') === false)
+            $pub_key .= "\n-----END PUBLIC KEY-----";
+
+        $this->publicKey = openssl_pkey_get_public($pub_key);
+
+
+        $key = file_get_contents($this->config->get('gateway.saderat.private-key'));
+
+        if (strpos($key, '-----BEGIN PRIVATE KEY-----') === false)
+            $key = "-----BEGIN PRIVATE KEY-----\n" . $key;
+
+        if (strpos($key, '-----END PRIVATE KEY-----') === false)
+            $key .= "\n-----END PRIVATE KEY-----";
+
+        $this->privateKey = openssl_pkey_get_private($key);
     }
 
     /**
@@ -287,14 +297,7 @@ class Saderat extends PortAbstract implements PortInterface
 
         try {
             // Disable SSL
-            $soap = new \SoapClient($this->verifyUrl, $this->config, array("stream_context" => stream_context_create(
-                array(
-                    'ssl' => array(
-                        'verify_peer'       => false,
-                        'verify_peer_name'  => false,
-                    )
-                )
-            )));
+            $soap = new \SoapClient($this->verifyUrl);
             $response = $soap->sendConfirmation($fields);
 
         } catch(\SoapFault $e) {
