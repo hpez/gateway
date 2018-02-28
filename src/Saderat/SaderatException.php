@@ -1,6 +1,6 @@
 <?php
 
-use Shirazsoft\Gateway\Saderat;
+namespace Shirazsoft\Gateway\Saderat;
 
 class SaderatException extends \Exception
 {
