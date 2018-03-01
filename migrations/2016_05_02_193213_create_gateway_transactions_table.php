@@ -37,7 +37,7 @@ class CreateGatewayTransactionsTable extends Migration
                 Enum::IRANKISH,
                 Enum::SADERAT
 			]);
-			$table->decimal('price', 15, 2);
+			$table->decimal('price', 15, 0);
 			$table->string('ref_id', 100)->nullable();
 			$table->string('tracking_code', 50)->nullable();
 			$table->string('card_number', 50)->nullable();
