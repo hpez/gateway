@@ -146,13 +146,11 @@ class Saderat extends PortAbstract implements PortInterface
     protected function setKeys()
     {
         $pub_key = file_get_contents(config('gateway.saderat.public-key'));
-        $pub_key = "-----BEGIN PUBLIC KEY-----\n" . $pub_key;
-        $pub_key .= "\n-----END PUBLIC KEY-----";
+        $pub_key = '-----BEGIN PUBLIC KEY-----' . PHP_EOL . $pub_key. PHP_EOL ."-----END PUBLIC KEY-----";
         $this->publicKey = openssl_pkey_get_public($pub_key);
 
         $pri_key = file_get_contents(config('gateway.saderat.private-key'));
-        $pri_key = "-----BEGIN PRIVATE KEY-----\n" . $pri_key;
-        $pri_key .= "\n-----END PRIVATE KEY-----";
+        $pri_key = "-----BEGIN PRIVATE KEY-----" . PHP_EOL . $pri_key. PHP_EOL ."-----END PRIVATE KEY-----";
         $this->privateKey = openssl_pkey_get_private($pri_key);
     }
 
@@ -163,7 +161,7 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function getEncryptedAmount()
     {
-        openssl_public_encrypt($this->amount, $crypted, $this->publicKey);
+        openssl_public_encrypt($this->amount,$crypted, $this->publicKey);
         return base64_encode($crypted);
     }
 
