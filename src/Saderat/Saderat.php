@@ -147,7 +147,7 @@ class Saderat extends PortAbstract implements PortInterface
     {
         $pub_key = file_get_contents($this->config->get('gateway.saderat.public-key'));
         $pub_key = "-----BEGIN PUBLIC KEY-----\n" . $pub_key;
-        $pub_key .= "\n-----END PUBLIC KEY-----"
+        $pub_key .= "\n-----END PUBLIC KEY-----";
         $this->publicKey = openssl_pkey_get_public($pub_key);
 
         $pri_key = file_get_contents($this->config->get('gateway.saderat.private-key'));
