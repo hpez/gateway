@@ -146,24 +146,16 @@ class Saderat extends PortAbstract implements PortInterface
     protected function setKeys()
     {
         $pub_key = file_get_contents($this->config->get('gateway.saderat.public-key'));
-        if (strpos($pub_key, '-----BEGIN PUBLIC KEY-----') === false)
-            $pub_key = "-----BEGIN PUBLIC KEY-----\n" . $pub_key;
 
-        if (strpos($pub_key, '-----END PUBLIC KEY-----') === false)
-            $pub_key .= "\n-----END PUBLIC KEY-----";
-
+        $pub_key = "-----BEGIN PUBLIC KEY-----\n" . $pub_key;
+        $pub_key .= "\n-----END PUBLIC KEY-----"
         $this->publicKey = openssl_pkey_get_public($pub_key);
 
+        $pri_key = file_get_contents($this->config->get('gateway.saderat.private-key'));
+        $pri_key = "-----BEGIN PRIVATE KEY-----\n" . $pri_key;
+        $pri_key .= "\n-----END PRIVATE KEY-----";
 
-        $key = file_get_contents($this->config->get('gateway.saderat.private-key'));
-
-        if (strpos($key, '-----BEGIN PRIVATE KEY-----') === false)
-            $key = "-----BEGIN PRIVATE KEY-----\n" . $key;
-
-        if (strpos($key, '-----END PRIVATE KEY-----') === false)
-            $key .= "\n-----END PRIVATE KEY-----";
-
-        $this->privateKey = openssl_pkey_get_private($key);
+        $this->privateKey = openssl_pkey_get_private($pri_key);
     }
 
     /**
