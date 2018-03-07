@@ -145,12 +145,12 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function setKeys()
     {
-        $pub_key = file_get_contents($this->config->get('gateway.saderat.public-key'));
+        $pub_key = file_get_contents(config('gateway.saderat.public-key'));
         $pub_key = "-----BEGIN PUBLIC KEY-----\n" . $pub_key;
         $pub_key .= "\n-----END PUBLIC KEY-----";
         $this->publicKey = openssl_pkey_get_public($pub_key);
 
-        $pri_key = file_get_contents($this->config->get('gateway.saderat.private-key'));
+        $pri_key = file_get_contents(config('gateway.saderat.private-key'));
         $pri_key = "-----BEGIN PRIVATE KEY-----\n" . $pri_key;
         $pri_key .= "\n-----END PRIVATE KEY-----";
         $this->privateKey = openssl_pkey_get_private($pri_key);
@@ -185,7 +185,7 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function getEncryptedMerchantId()
     {
-        openssl_public_encrypt($this->config->get('gateway.saderat.merchant-id'), $crypted, $this->publicKey);
+        openssl_public_encrypt(config('gateway.saderat.merchant-id'), $crypted, $this->publicKey);
         return base64_encode($crypted);
     }
 
@@ -196,7 +196,7 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function getEncryptedTerminalId()
     {
-        openssl_public_encrypt($this->config->get('gateway.saderat.terminal-id'), $crypted, $this->publicKey);
+        openssl_public_encrypt(config('gateway.saderat.terminal-id'), $crypted, $this->publicKey);
         return base64_encode($crypted);
     }
 
@@ -230,9 +230,9 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function createSignature()
     {
-        $data = $this->amount.$this->transactionId().$this->config->get('gateway.saderat.merchant-id').
+        $data = $this->amount.$this->transactionId().config('gateway.saderat.merchant-id').
             $this->getCallback().
-            $this->config->get('gateway.saderat.terminal-id');
+            config('gateway.saderat.terminal-id');
 
         openssl_sign($data, $signature, $this->privateKey, OPENSSL_ALGO_SHA1);
         return base64_encode($signature);
@@ -245,7 +245,7 @@ class Saderat extends PortAbstract implements PortInterface
      */
     protected function createVerifySignature()
     {
-        $data = $this->config->get('gateway.saderat.merchant-id').$this->trackingCode().$this->transactionId();
+        $data = config('gateway.saderat.merchant-id').$this->trackingCode().$this->transactionId();
 
         openssl_sign($data, $signature, $this->privateKey, OPENSSL_ALGO_SHA1);
         return base64_encode($signature);
@@ -340,7 +340,7 @@ class Saderat extends PortAbstract implements PortInterface
     function getCallback()
     {
         if (!$this->callbackUrl) {
-            $this->callbackUrl = $this->config->get('gateway.saderat.callback-url');
+            $this->callbackUrl = config('gateway.saderat.callback-url');
         }
         return $this->makeCallback($this->callbackUrl, ['transaction_id' => $this->transactionId()]);
     }
