@@ -111,7 +111,20 @@ class Saderat extends PortAbstract implements PortInterface
 
         try {
             // Disable SSL
-            $soap = new \SoapClient($this->serverUrl);
+            $soap = new SoapClient($this->serverUrl,
+                array("stream_context" => stream_context_create(
+                    array(
+                        'ssl' => array(
+                            'verify_peer'       => false,
+                            'verify_peer_name'  => false,
+                        )
+                    )
+                ),
+                    'soap' => array(
+                        'attempts' => 2 // Attempts if soap connection is fail
+                    )
+
+                ));
             $response = $soap->reservation($fields);
 
         } catch(\SoapFault $e) {
@@ -284,8 +297,20 @@ class Saderat extends PortAbstract implements PortInterface
         );
 
         try {
-            // Disable SSL
-            $soap = new \SoapClient($this->verifyUrl);
+            $soap = new SoapClient($this->verifyUrl,
+                array("stream_context" => stream_context_create(
+                    array(
+                        'ssl' => array(
+                            'verify_peer'       => false,
+                            'verify_peer_name'  => false,
+                        )
+                    )
+                ),
+                    'soap' => array(
+                        'attempts' => 2 // Attempts if soap connection is fail
+                    )
+
+                ));
             $response = $soap->sendConfirmation($fields);
 
         } catch(\SoapFault $e) {
