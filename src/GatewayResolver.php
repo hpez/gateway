@@ -71,6 +71,7 @@ class GatewayResolver
             Enum::PAYIR,
             Enum::IRANKISH,
             Enum::SADERAT,
+            Enum::SAMANMOBILE,
         ];
 	}
 
@@ -81,7 +82,6 @@ class GatewayResolver
 	 */
 	public function __call($name, $arguments)
 	{
-
 		// calling by this way ( Gateway::mellat()->.. , Gateway::parsian()->.. )
 		if(in_array(strtoupper($name),$this->getSupportedPorts())){
 			return $this->make($name);
@@ -161,6 +161,8 @@ class GatewayResolver
             $name = Enum::IRANKISH;
         } elseif ($port InstanceOf Saderat) {
             $name = Enum::SADERAT;
+        }  elseif ($port InstanceOf Samanmobile) {
+            $name = Enum::SAMANMOBILE;
         }  elseif(in_array(strtoupper($port),$this->getSupportedPorts())){
 			$port=ucfirst(strtolower($port));
 			$name=strtoupper($port);

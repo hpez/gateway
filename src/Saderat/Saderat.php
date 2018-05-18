@@ -164,6 +164,8 @@ class Saderat extends PortAbstract implements PortInterface
 
         $pri_key = file_get_contents(config('gateway.saderat.private-key'));
         $pri_key = "-----BEGIN PRIVATE KEY-----" . PHP_EOL . $pri_key. PHP_EOL ."-----END PRIVATE KEY-----";
+
+
         $this->privateKey = openssl_pkey_get_private($pri_key);
     }
 

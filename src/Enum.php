@@ -17,6 +17,7 @@ class Enum
   	const PAYIR = 'PAYIR';
     const IRANKISH = 'IRANKISH';
     const SADERAT = 'SADERAT';
+    const SAMANMOBILE = 'SAMANMOBILE';
 	
 	/**
 	 * Status code for status field in poolport_transactions table

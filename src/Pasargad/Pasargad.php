@@ -100,9 +100,9 @@ class Pasargad extends PortAbstract implements PortInterface
      */
     function getCallback()
     {
-        if (!$this->callbackUrl)
+        if (!$this->callbackUrl) {
             $this->callbackUrl = $this->config->get('gateway.pasargad.callback-url');
-
+        }
         return $this->callbackUrl;
     }
 
