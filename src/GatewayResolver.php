@@ -11,6 +11,7 @@ use Shirazsoft\Gateway\Pasargad\Pasargad;
 use Shirazsoft\Gateway\Saderat\Saderat;
 use Shirazsoft\Gateway\Saman\Saman;
 use Shirazsoft\Gateway\Asanpardakht\Asanpardakht;
+use Shirazsoft\Gateway\Samanmobile\Samanmobile;
 use Shirazsoft\Gateway\Zarinpal\Zarinpal;
 use Shirazsoft\Gateway\Payir\Payir;
 use Shirazsoft\Gateway\Exceptions\RetryException;
@@ -163,6 +164,8 @@ class GatewayResolver
             $name = Enum::SADERAT;
         }  elseif ($port InstanceOf Samanmobile) {
             $name = Enum::SAMANMOBILE;
+        }  elseif ($port InstanceOf Pasargad) {
+            $name = Enum::PASARGAD;
         }  elseif(in_array(strtoupper($port),$this->getSupportedPorts())){
 			$port=ucfirst(strtolower($port));
 			$name=strtoupper($port);
