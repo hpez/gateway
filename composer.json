@@ -1,7 +1,7 @@
 {
   "name": "Hpez/gateway",
   "homepage": "https://github.com/Hpez/Gateway",
-  "description": "A Laravel package for connecting to all Iraninan payment  gateways",
+  "description": "A Laravel package for connecting to all Iraninan payment gateways",
   "keywords": [
     "laravel",
     "iran",
@@ -35,8 +35,8 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Ali Ghasemzadeh",
-      "email": "it.ghasemzadeh@gmail.com"
+      "name": "Hassan Pezeshk",
+      "email": "hpez58@gmail.com"
     }
   ],
   "require": {
