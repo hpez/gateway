@@ -32,5 +32,5 @@ php artisan vendor:publish --provider="Hpez\Gateway\GatewayServiceProvider"
  
 ### Step 3:
 
-Find config/gateway.php and change it what you need.
+Find the config file at config/gateway.php and change it according to your needs.
 
