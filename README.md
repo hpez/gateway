@@ -1,4 +1,4 @@
-# Hpez Gateway
+# Gateway
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/Hpez/gateway.svg?style=flat-square)](https://packagist.org/packages/Hpez/gateway)
 
