@@ -1,8 +1,9 @@
 <?php
-namespace Shirazsoft\Gateway;
+
+namespace Hpez\Gateway;
 
 use Illuminate\Support\Facades\Request;
-use Shirazsoft\Gateway\Enum;
+use Hpez\Gateway\Enum;
 use Carbon\Carbon;
 
 abstract class PortAbstract
@@ -79,7 +80,8 @@ abstract class PortAbstract
 	}
 
 	/** bootstraper */
-	function boot(){
+	function boot()
+	{
 
 	}
 
@@ -91,7 +93,7 @@ abstract class PortAbstract
 	/**
 	 * @return mixed
 	 */
-	function getTable() 
+	function getTable()
 	{
 		return $this->db->table($this->config->get('gateway.table'));
 	}
@@ -198,10 +200,10 @@ abstract class PortAbstract
 
 	function getTimeId()
 	{
-		$genuid = function(){
-			return substr(str_pad(str_replace('.','', microtime(true)),12,0),0,12);
+		$genuid = function () {
+			return substr(str_pad(str_replace('.', '', microtime(true)), 12, 0), 0, 12);
 		};
-		$uid=$genuid();
+		$uid = $genuid();
 		while ($this->getTable()->whereId($uid)->first())
 			$uid = $genuid();
 		return $uid;
@@ -323,8 +325,8 @@ abstract class PortAbstract
 		}
 
 		return (!empty($url_array['scheme']) ? $url_array['scheme'] . '://' : null) .
-		(!empty($url_array['host']) ? $url_array['host'] : null) .
-        (!empty($url_array['port']) ? ':' . $url_array['port'] : null) .
-		$url_array['path'] . '?' . http_build_query($query_array);
+			(!empty($url_array['host']) ? $url_array['host'] : null) .
+			(!empty($url_array['port']) ? ':' . $url_array['port'] : null) .
+			$url_array['path'] . '?' . http_build_query($query_array);
 	}
 }

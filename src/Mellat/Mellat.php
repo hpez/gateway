@@ -1,13 +1,13 @@
 <?php
 
-namespace Shirazsoft\Gateway\Mellat;
+namespace Hpez\Gateway\Mellat;
 
 use DateTime;
 use Illuminate\Support\Facades\Input;
-use Shirazsoft\Gateway\Enum;
+use Hpez\Gateway\Enum;
 use SoapClient;
-use Shirazsoft\Gateway\PortAbstract;
-use Shirazsoft\Gateway\PortInterface;
+use Hpez\Gateway\PortAbstract;
+use Hpez\Gateway\PortInterface;
 
 class Mellat extends PortAbstract implements PortInterface
 {
@@ -45,7 +45,7 @@ class Mellat extends PortAbstract implements PortInterface
 	{
 		$refId = $this->refId;
 
-        return \View::make('gateway::mellat-redirector')->with(compact('refId'));
+		return \View::make('gateway::mellat-redirector')->with(compact('refId'));
 	}
 
 	/**
@@ -112,7 +112,7 @@ class Mellat extends PortAbstract implements PortInterface
 
 		try {
 			$soap = new \SoapClient($this->serverUrl);
-            $response = $soap->bpPayRequest($fields);
+			$response = $soap->bpPayRequest($fields);
 
 		} catch (\SoapFault $e) {
 			$this->transactionFailed();

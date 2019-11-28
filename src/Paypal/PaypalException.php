@@ -1,18 +1,17 @@
 <?php
 
-namespace Shirazsoft\Gateway\Paypal;
+namespace Hpez\Gateway\Paypal;
 
-use Shirazsoft\Gateway\Exceptions\BankException;
+use Hpez\Gateway\Exceptions\BankException;
 
 class PaypalException extends BankException
 {
-    public static $errors = array(
-    );
+	public static $errors = array();
 
-    public function __construct($errorId)
-    {
-        $this->errorId = intval($errorId);
+	public function __construct($errorId)
+	{
+		$this->errorId = intval($errorId);
 
-        parent::__construct(@self::$errors[$this->errorId].' #'.$this->errorId, $this->errorId);
-    }
+		parent::__construct(@self::$errors[$this->errorId] . ' #' . $this->errorId, $this->errorId);
+	}
 }

@@ -1,34 +1,65 @@
 {
-    "name": "shirazsoft/gateway",
-    "homepage": "https://github.com/ShirazSoft/Gateway",
-    "description": "A Laravel package for connecting to all Iraninan payment  gateways",
-    "keywords": ["laravel","iran","payment", "gateway", "port", "bank", "pay", "mellat", "saman", "pasargad", "parsian", "sadad", "meli", "payline", "jahanpay", "zarinpal", "iranian-banks", "persian-banks", "pardakht","dargah","shaparak","poolport","ipay","asan-pardakht","pay-ir","paypal","irankish","saderat"],
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Ali Ghasemzadeh",
-            "email": "it.ghasemzadeh@gmail.com"
-        }
-    ],
-    "require": {
-        "nesbot/carbon": "~1.20",
-        "paypal/rest-api-sdk-php": "*"
-    },    
-    "autoload": {
-        "psr-4": {
-            "Shirazsoft\\Gateway\\": "src/",
-            "Shirazsoft\\Gateway\\Tests\\": "tests/"
-        }
-    },
-    "minimum-stability": "dev",
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Shirazsoft\\Gateway\\GatewayServiceProvider"
-            ],
-            "aliases": {
-                "Gateway": "Shirazsoft\\Gateway\\Gateway"
-            }
-        }
+  "name": "Hpez/gateway",
+  "homepage": "https://github.com/Hpez/Gateway",
+  "description": "A Laravel package for connecting to all Iraninan payment  gateways",
+  "keywords": [
+    "laravel",
+    "iran",
+    "payment",
+    "gateway",
+    "port",
+    "bank",
+    "pay",
+    "mellat",
+    "saman",
+    "pasargad",
+    "parsian",
+    "sadad",
+    "meli",
+    "payline",
+    "jahanpay",
+    "zarinpal",
+    "iranian-banks",
+    "persian-banks",
+    "pardakht",
+    "dargah",
+    "shaparak",
+    "poolport",
+    "ipay",
+    "asan-pardakht",
+    "pay-ir",
+    "paypal",
+    "irankish",
+    "saderat"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ali Ghasemzadeh",
+      "email": "it.ghasemzadeh@gmail.com"
     }
+  ],
+  "require": {
+    "nesbot/carbon": "~1.20",
+    "paypal/rest-api-sdk-php": "*",
+    "ext-soap": "*",
+    "ext-xml": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Hpez\\Gateway\\": "src/",
+      "Hpez\\Gateway\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev",
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Hpez\\Gateway\\GatewayServiceProvider"
+      ],
+      "aliases": {
+        "Gateway": "Hpez\\Gateway\\Gateway"
+      }
+    }
+  }
 }

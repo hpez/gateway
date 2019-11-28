@@ -1,8 +1,10 @@
 <?php
 
-namespace Shirazsoft\Gateway\Sadad;
+namespace Hpez\Gateway\Sadad;
 
 
-use Shirazsoft\Gateway\Exceptions\BankException;
+use Hpez\Gateway\Exceptions\BankException;
 
-class SadadException extends BankException {}
+class SadadException extends BankException
+{
+}

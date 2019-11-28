@@ -1,7 +1,9 @@
 <?php
 
-namespace Shirazsoft\Gateway\Parsian;
+namespace Hpez\Gateway\Parsian;
 
-use Shirazsoft\Gateway\Exceptions\BankException;
+use Hpez\Gateway\Exceptions\BankException;
 
-class ParsianErrorException extends BankException {}
+class ParsianErrorException extends BankException
+{
+}

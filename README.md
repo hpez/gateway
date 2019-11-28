@@ -1,6 +1,6 @@
-# ShirazSoft Gateway
+# Hpez Gateway
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/shirazsoft/gateway.svg?style=flat-square)](https://packagist.org/packages/shirazsoft/gateway)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/Hpez/gateway.svg?style=flat-square)](https://packagist.org/packages/Hpez/gateway)
 
 
 Available Banks:
@@ -15,22 +15,19 @@ Available Banks:
  9. PAY.IR
 10. SADERAT
 11. IRANKISH
-
-
-If you have any qustions please ask in our website: http://ShirazSoft.com
  
 ## Install
  
 ### Step 1:
 
 ``` bash
-composer require shirazsoft/gateway
+composer require hpez/gateway
 ```
 
 ### Step 2:
 
 ``` bash
-php artisan vendor:publish --provider="Shirazsoft\Gateway\GatewayServiceProvider"
+php artisan vendor:publish --provider="Hpez\Gateway\GatewayServiceProvider"
 ```
  
 ### Step 3:

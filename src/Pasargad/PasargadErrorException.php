@@ -1,7 +1,9 @@
 <?php
 
-namespace Shirazsoft\Gateway\Pasargad;
+namespace Hpez\Gateway\Pasargad;
 
-use Shirazsoft\Gateway\Exceptions\BankException;
+use Hpez\Gateway\Exceptions\BankException;
 
-class PasargadErrorException extends BankException {}
+class PasargadErrorException extends BankException
+{
+}

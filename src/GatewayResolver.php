@@ -1,23 +1,23 @@
 <?php
 
-namespace Shirazsoft\Gateway;
+namespace Hpez\Gateway;
 
-use Shirazsoft\Gateway\Irankish\Irankish;
-use Shirazsoft\Gateway\Parsian\Parsian;
-use Shirazsoft\Gateway\Paypal\Paypal;
-use Shirazsoft\Gateway\Sadad\Sadad;
-use Shirazsoft\Gateway\Mellat\Mellat;
-use Shirazsoft\Gateway\Pasargad\Pasargad;
-use Shirazsoft\Gateway\Saderat\Saderat;
-use Shirazsoft\Gateway\Saman\Saman;
-use Shirazsoft\Gateway\Asanpardakht\Asanpardakht;
-use Shirazsoft\Gateway\Samanmobile\Samanmobile;
-use Shirazsoft\Gateway\Zarinpal\Zarinpal;
-use Shirazsoft\Gateway\Payir\Payir;
-use Shirazsoft\Gateway\Exceptions\RetryException;
-use Shirazsoft\Gateway\Exceptions\PortNotFoundException;
-use Shirazsoft\Gateway\Exceptions\InvalidRequestException;
-use Shirazsoft\Gateway\Exceptions\NotFoundTransactionException;
+use Hpez\Gateway\Irankish\Irankish;
+use Hpez\Gateway\Parsian\Parsian;
+use Hpez\Gateway\Paypal\Paypal;
+use Hpez\Gateway\Sadad\Sadad;
+use Hpez\Gateway\Mellat\Mellat;
+use Hpez\Gateway\Pasargad\Pasargad;
+use Hpez\Gateway\Saderat\Saderat;
+use Hpez\Gateway\Saman\Saman;
+use Hpez\Gateway\Asanpardakht\Asanpardakht;
+use Hpez\Gateway\Samanmobile\Samanmobile;
+use Hpez\Gateway\Zarinpal\Zarinpal;
+use Hpez\Gateway\Payir\Payir;
+use Hpez\Gateway\Exceptions\RetryException;
+use Hpez\Gateway\Exceptions\PortNotFoundException;
+use Hpez\Gateway\Exceptions\InvalidRequestException;
+use Hpez\Gateway\Exceptions\NotFoundTransactionException;
 use Illuminate\Support\Facades\DB;
 
 class GatewayResolver
@@ -61,19 +61,19 @@ class GatewayResolver
 	public function getSupportedPorts()
 	{
 		return [
-            Enum::MELLAT,
-            Enum::SADAD,
-            Enum::ZARINPAL,
-            Enum::PARSIAN,
-            Enum::PASARGAD,
-            Enum::SAMAN,
-            Enum::PAYPAL,
-            Enum::ASANPARDAKHT,
-            Enum::PAYIR,
-            Enum::IRANKISH,
-            Enum::SADERAT,
-            Enum::SAMANMOBILE,
-        ];
+			Enum::MELLAT,
+			Enum::SADAD,
+			Enum::ZARINPAL,
+			Enum::PARSIAN,
+			Enum::PASARGAD,
+			Enum::SAMAN,
+			Enum::PAYPAL,
+			Enum::ASANPARDAKHT,
+			Enum::PAYIR,
+			Enum::IRANKISH,
+			Enum::SADERAT,
+			Enum::SAMANMOBILE,
+		];
 	}
 
 	/**
@@ -84,7 +84,7 @@ class GatewayResolver
 	public function __call($name, $arguments)
 	{
 		// calling by this way ( Gateway::mellat()->.. , Gateway::parsian()->.. )
-		if(in_array(strtoupper($name),$this->getSupportedPorts())){
+		if (in_array(strtoupper($name), $this->getSupportedPorts())) {
 			return $this->make($name);
 		}
 
@@ -116,7 +116,7 @@ class GatewayResolver
 			throw new InvalidRequestException;
 		if ($this->request->has('transaction_id')) {
 			$id = $this->request->get('transaction_id');
-		}else {
+		} else {
 			$id = $this->request->get('iN');
 		}
 
@@ -157,20 +157,20 @@ class GatewayResolver
 		} elseif ($port InstanceOf Paypal) {
 			$name = Enum::PAYPAL;
 		} elseif ($port InstanceOf Payir) {
-            $name = Enum::PAYIR;
-        } elseif ($port InstanceOf Irankish) {
-            $name = Enum::IRANKISH;
-        } elseif ($port InstanceOf Saderat) {
-            $name = Enum::SADERAT;
-        }  elseif ($port InstanceOf Samanmobile) {
-            $name = Enum::SAMANMOBILE;
-        }  elseif ($port InstanceOf Pasargad) {
-            $name = Enum::PASARGAD;
-        }  elseif(in_array(strtoupper($port),$this->getSupportedPorts())){
-			$port=ucfirst(strtolower($port));
-			$name=strtoupper($port);
-			$class=__NAMESPACE__.'\\'.$port.'\\'.$port;
-			$port=new $class;
+			$name = Enum::PAYIR;
+		} elseif ($port InstanceOf Irankish) {
+			$name = Enum::IRANKISH;
+		} elseif ($port InstanceOf Saderat) {
+			$name = Enum::SADERAT;
+		} elseif ($port InstanceOf Samanmobile) {
+			$name = Enum::SAMANMOBILE;
+		} elseif ($port InstanceOf Pasargad) {
+			$name = Enum::PASARGAD;
+		} elseif (in_array(strtoupper($port), $this->getSupportedPorts())) {
+			$port = ucfirst(strtolower($port));
+			$name = strtoupper($port);
+			$class = __NAMESPACE__ . '\\' . $port . '\\' . $port;
+			$port = new $class;
 		} else
 			throw new PortNotFoundException;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Shirazsoft\Gateway;
+namespace Hpez\Gateway;
 
 class Enum
 {
@@ -14,11 +14,11 @@ class Enum
 	const SAMAN = 'SAMAN';
 	const ASANPARDAKHT = 'ASANPARDAKHT';
 	const PAYPAL = 'PAYPAL';
-  	const PAYIR = 'PAYIR';
-    const IRANKISH = 'IRANKISH';
-    const SADERAT = 'SADERAT';
-    const SAMANMOBILE = 'SAMANMOBILE';
-	
+	const PAYIR = 'PAYIR';
+	const IRANKISH = 'IRANKISH';
+	const SADERAT = 'SADERAT';
+	const SAMANMOBILE = 'SAMANMOBILE';
+
 	/**
 	 * Status code for status field in poolport_transactions table
 	 */

@@ -1,11 +1,11 @@
 <?php
 
-namespace Shirazsoft\Gateway\Parsian;
+namespace Hpez\Gateway\Parsian;
 
 use Illuminate\Support\Facades\Input;
 use SoapClient;
-use Shirazsoft\Gateway\PortAbstract;
-use Shirazsoft\Gateway\PortInterface;
+use Hpez\Gateway\PortAbstract;
+use Hpez\Gateway\PortInterface;
 
 class Parsian extends PortAbstract implements PortInterface
 {

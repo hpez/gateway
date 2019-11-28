@@ -1,11 +1,12 @@
 <?php
 
-namespace Shirazsoft\Gateway\Pasargad;
+namespace Hpez\Gateway\Pasargad;
 
 
 class PasargadResult
 {
-	public static function errorMessage($state) {
+	public static function errorMessage($state)
+	{
 		$state = strtolower((string)$state);
 		switch ($state) {
 			case "canceled by user" :

@@ -1,11 +1,11 @@
 <?php
 
-namespace Shirazsoft\Gateway\Payline;
+namespace Hpez\Gateway\Payline;
 
 use Illuminate\Support\Facades\Input;
-use Shirazsoft\Gateway\Enum;
-use Shirazsoft\Gateway\PortAbstract;
-use Shirazsoft\Gateway\PortInterface;
+use Hpez\Gateway\Enum;
+use Hpez\Gateway\PortAbstract;
+use Hpez\Gateway\PortInterface;
 
 class Payline extends PortAbstract implements PortInterface
 {

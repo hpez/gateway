@@ -2,9 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Shirazsoft\Gateway\PortAbstract;
-use Shirazsoft\Gateway\GatewayResolver;
-use Shirazsoft\Gateway\Enum;
+use Hpez\Gateway\Enum;
 
 class CreateGatewayTransactionsTable extends Migration
 {
@@ -34,7 +32,7 @@ class CreateGatewayTransactionsTable extends Migration
 				Enum::SAMAN,
 				Enum::ASANPARDAKHT,
 				Enum::PAYPAL,
-                Enum::IRANKISH,
+				Enum::IRANKISH,
                 Enum::SADERAT,
                 Enum::PAYIR
 			]);
