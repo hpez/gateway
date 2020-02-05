@@ -1,6 +1,7 @@
 # Gateway
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/Hpez/gateway.svg?style=flat-square)](https://packagist.org/packages/hpez/gateway)
+[![Total Downloads](https://poser.pugx.org/hpez/gateway/downloads)](https://packagist.org/packages/hpez/gateway)
 
 
 Available Banks:
