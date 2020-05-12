@@ -1,10 +1,11 @@
-# Gateway
+# Gateway (پکیج درگاه‌های بانکی ایران)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/Hpez/gateway.svg?style=flat-square)](https://packagist.org/packages/hpez/gateway)
 [![Total Downloads](https://poser.pugx.org/hpez/gateway/downloads)](https://packagist.org/packages/hpez/gateway)
 
+A package for simplifying the integration with Iranian banks.
 
-Available Banks:
+Supported gatways:
  1. MELLAT
  2. SADAD (MELLI)
  3. SAMAN
@@ -21,13 +22,13 @@ Available Banks:
  
 ### Step 1:
 
-``` bash
+```bash
 composer require hpez/gateway
 ```
 
 ### Step 2:
 
-``` bash
+```bash
 php artisan vendor:publish --provider="Hpez\Gateway\GatewayServiceProvider"
 ```
  
@@ -35,3 +36,21 @@ php artisan vendor:publish --provider="Hpez\Gateway\GatewayServiceProvider"
 
 Find the config file at config/gateway.php and change it according to your needs.
 
+## Usage example:
+
+### Redirecting to gateway:
+```php
+$gateway = \Gateway::make(new \Hpez\Gateway\Mellat\Mellat());
+$gateway->setCallback("your callback route");
+$gateway->price($invoiceTotal)->ready();
+$refId = $gateway->refId(); // شماره ارجاع بانک
+$transactionId = $gateway->transactionId(); // شماره تراکنش
+return $gateway->redirect();
+```
+### Settling the transaction:
+```php
+$gateway = \Gateway::verify();
+$trackingCode = $gateway->trackingCode();
+$refId = $gateway->refId();
+$cardNumber = $gateway->cardNumber();
+```
