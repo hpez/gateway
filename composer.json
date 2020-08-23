@@ -1,7 +1,7 @@
 {
   "name": "hpez/gateway",
   "homepage": "https://github.com/hpez/gateway",
-  "description": "A Laravel package for connecting to all Iranian payment gateways",
+  "description": "A Laravel package for using all Iranian payment gateways",
   "keywords": [
     "laravel",
     "iran",
