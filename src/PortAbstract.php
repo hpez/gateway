@@ -53,6 +53,13 @@ abstract class PortAbstract
 	 */
 	protected $amount;
 
+    /**
+     * Cellphone number
+     *
+     * @var string
+     */
+    protected $cellNumber;
+
 	/**
 	 * callback URL
 	 *
@@ -208,6 +215,11 @@ abstract class PortAbstract
 			$uid = $genuid();
 		return $uid;
 	}
+
+	function setCellNumber($cellNumber)
+    {
+        $this->cellNumber = $cellNumber;
+    }
 
 	/**
 	 * Insert new transaction to poolport_transactions table

@@ -52,6 +52,13 @@
 			redirectAddress.setAttribute("value", "{{$redirectUrl}}");
             form.appendChild(redirectAddress);
 
+            @isset($mobile)
+            var mobile = document.createElement("input");
+            mobile.setAttribute("name", "mobile");
+            mobile.setAttribute("value", "{{$mobile}}");
+            form.appendChild(mobile);
+            @endisset
+
 			document.body.appendChild(form);
             form.submit();
         	//document.write(form.outerHTML());

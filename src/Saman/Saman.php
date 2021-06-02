@@ -41,13 +41,18 @@ class Saman extends PortAbstract implements PortInterface
 	 */
 	public function redirect()
 	{
+        $params = [
+            'amount' => $this->amount,
+            'merchant' => $this->config->get('gateway.saman.merchant'),
+            'resNum' => $this->transactionId(),
+            'callBackUrl' => $this->getCallback()
+        ];
 
-		return \View::make('gateway::saman-redirector')->with([
-			'amount' => $this->amount,
-			'merchant' => $this->config->get('gateway.saman.merchant'),
-			'resNum' => $this->transactionId(),
-			'callBackUrl' => $this->getCallback()
-		]);
+        if ($this->cellNumber) {
+            $params['cellNumber'] = $this->cellNumber;
+        }
+
+		return \View::make('gateway::saman-redirector')->with($params);
 	}
 
 	/**

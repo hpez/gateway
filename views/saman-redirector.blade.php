@@ -11,6 +11,9 @@
                 MID: '{{$merchant}}',
                 ResNum: '{{$resNum}}',
                 RedirectURL: '{{$callBackUrl}}',
+                @isset($cellNumber)
+                CellNumber: '{{ $cellNumber }}'
+                @endisset
             };
 
             for(var key in params){
