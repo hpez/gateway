@@ -42,6 +42,7 @@ Find the config file at config/gateway.php and change it according to your needs
 ```php
 $gateway = \Gateway::make(new \Hpez\Gateway\Mellat\Mellat());
 $gateway->setCallback("your callback route");
+$gateway->setCellNumber("09xxxxxxxxx"); // Optional
 $gateway->price($invoiceTotal)->ready();
 $refId = $gateway->refId(); // شماره ارجاع بانک
 $transactionId = $gateway->transactionId(); // شماره تراکنش
