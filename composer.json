@@ -40,7 +40,7 @@
     }
   ],
   "require": {
-    "nesbot/carbon": "2.*",
+    "nesbot/carbon": ">=1.*",
     "paypal/rest-api-sdk-php": "*",
     "ext-soap": "*",
     "ext-xml": "*"
