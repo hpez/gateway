@@ -188,7 +188,7 @@ class Pasargad extends PortAbstract implements PortInterface
 
         $response = json_decode($response->getBody()->getContents());
 
-		if (!$response->isSuccess) {
+		if (!$response->IsSuccess) {
 			$this->newLog(-1, Enum::TRANSACTION_FAILED_TEXT);
 			$this->transactionFailed();
 			throw new PasargadErrorException(Enum::TRANSACTION_FAILED_TEXT, -1);
