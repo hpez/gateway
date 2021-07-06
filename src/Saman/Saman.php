@@ -127,7 +127,7 @@ class Saman extends PortAbstract implements PortInterface
             throw new SamanException(Enum::TRANSACTION_FAILED_TEXT);
         }
 
-        $this->token = $response->Token;
+        $this->token = $response->token;
     }
 
 	/**
