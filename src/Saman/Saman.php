@@ -123,7 +123,7 @@ class Saman extends PortAbstract implements PortInterface
         $response = json_decode($response->getBody()->getContents());
 
         if ($response->status != 1) {
-            $this->newLog(-1, Enum::TRANSACTION_FAILED_TEXT);
+            $this->newLog($response->errorCode, $response->errorDesc);
             throw new SamanException(Enum::TRANSACTION_FAILED_TEXT);
         }
 
