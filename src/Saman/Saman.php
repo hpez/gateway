@@ -16,7 +16,7 @@ class Saman extends PortAbstract implements PortInterface
 	 *
 	 * @var string
 	 */
-	protected $serverUrl = 'https://sep.shaparak.ir/OnlinePG/OnlinePG';
+	protected $serverUrl = 'https://sep.shaparak.ir/';
 	protected $redirectUrl = 'https://sep.shaparak.ir/OnlinePG/SendToken?token=';
 
 	protected $token;
@@ -113,7 +113,7 @@ class Saman extends PortAbstract implements PortInterface
             $params['cellNumber'] = $this->cellNumber;
         }
 
-        $response = $this->client->post('', [
+        $response = $this->client->post('OnlinePG/OnlinePG', [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
@@ -169,7 +169,7 @@ class Saman extends PortAbstract implements PortInterface
 			"RefNum" => $this->refId,
 		];
 
-        $response = $this->client->post('/verifyTxnRandomSessionkey/ipg/VerifyTransaction', [
+        $response = $this->client->post('verifyTxnRandomSessionkey/ipg/VerifyTransaction', [
             'headers' => [
                 'Content-Type' => 'application/json',
             ],
