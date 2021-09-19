@@ -165,20 +165,25 @@ class Saman extends PortAbstract implements PortInterface
 	protected function verifyPayment()
 	{
 		$params = [
-			"merchantID" => $this->config->get('gateway.saman.merchant'),
-			"RefNum" => $this->refId,
+            "RefNum" => $this->refId,
+            "MID" => $this->config->get('gateway.saman.merchant'),
 		];
 
-        $response = $this->client->post('verifyTxnRandomSessionkey/ipg/VerifyTransaction', [
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-            'json' => $params
-        ]);
+//        $response = $this->client->post('verifyTxnRandomSessionkey/ipg/VerifyTransaction', [
+//            'headers' => [
+//                'Content-Type' => 'application/json',
+//            ],
+//            'json' => $params
+//        ]);
+        $verifyUrl = 'https://sep.shaparak.ir/payments/referencepayment.asmx?WSDL';
 
-        $response = json_decode($response->getBody()->getContents());
+        $soap = new SoapClient($verifyUrl);
 
-        if ($response != $this->amount) {
+        $response = $soap->verifyTransaction($params['RefNum'], $params['MID']);
+
+//        $response = json_decode($response->getBody()->getContents());
+
+        if ($response <= 0) {
 			$this->transactionFailed();
 			$this->newLog($response, SamanException::$errors[$response]);
 			throw new SamanException($response);
