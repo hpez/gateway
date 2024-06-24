@@ -2,6 +2,8 @@
 
 namespace Hpez\Gateway\Asanpardakht;
 
+use Hpez\Gateway\Enum;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Input;
 use SoapClient;
 use Hpez\Gateway\PortAbstract;
@@ -15,10 +17,24 @@ class Asanpardakht extends PortAbstract implements PortInterface
 	 * @var string
 	 */
 	protected $serverUrl = 'https://services.asanpardakht.net/paygate/merchantservices.asmx?wsdl';
+    protected $verifyUrl = 'Api/v1/Verify';
+    protected $getTokenUrl = 'Api/v1/Token';
+    protected $baseUrl = 'https://asan.shaparak.ir/';
+    protected $tranResultUrl = 'Api/v1/Payment/';
 
-	/**
+    protected $token;
+    protected $payGateTranId;
+
+    /**
 	 * {@inheritdoc}
 	 */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->client = new Client(['base_uri' => $this->baseUrl]);
+    }
+
 	public function set($amount)
 	{
 		$this->amount = $amount;
@@ -54,8 +70,10 @@ class Asanpardakht extends PortAbstract implements PortInterface
 	{
 		parent::verify($transaction);
 
-		$this->userPayment();
-		$this->verifyAndSettlePayment();
+        $this->userPayment();
+		$this->verifyPayment();
+		$this->settlePayment();
+
 		return $this;
 	}
 
@@ -94,197 +112,233 @@ class Asanpardakht extends PortAbstract implements PortInterface
 	{
 		$this->newTransaction();
 
-		$username = $this->config->get('gateway.asanpardakht.username');
-		$password = $this->config->get('gateway.asanpardakht.password');
-		$orderId = $this->transactionId();
-		$price = $this->amount;
-		$localDate = date("Ymd His");
-		$additionalData = "";
-		$callBackUrl = $this->getCallback();
-		$req = "1,{$username},{$password},{$orderId},{$price},{$localDate},{$additionalData},{$callBackUrl},0";
+        $params = [
+            "merchantConfigurationId" => $this->config->get('gateway.asanpardakht.merchantConfigId'),
+            "serviceTypeId" => 1,
+            "localInvoiceId" => $this->transactionId(),
+            "amountInRials"=> $this->amount,
+            "localDate"=> date("Ymd His"),
+            "additionalData" => "",
+            "callbackURL" => $this->getCallback(),
+            "paymentId" => "",
+        ];
 
-		$encryptedRequest = $this->encrypt($req);
-		$params = array(
-			'merchantConfigurationID' => $this->config->get('gateway.asanpardakht.merchantConfigId'),
-			'encryptedRequest' => $encryptedRequest
-		);
+        $response = $this->client->post($this->getTokenUrl, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'usr' => $this->config->get('gateway.asanpardakht.username'),
+                'pwd' => $this->config->get('gateway.asanpardakht.password')
+            ],
+            'json' => $params
+        ]);
 
-		try {
-			$soap = new SoapClient($this->serverUrl);
-			$response = $soap->RequestOperation($params);
+        $response = json_decode($response->getBody()->getContents());
 
-		} catch (\SoapFault $e) {
-			$this->transactionFailed();
-			$this->newLog('SoapFault', $e->getMessage());
-			throw $e;
-		}
+        if ($response->status && $response->status != 200) {
+            $this->newLog(-1, Enum::TRANSACTION_FAILED_TEXT);
+            throw new AsanpardakhtException($response->status);
+        }
 
+        $this->token = $response->Token;
+    }
 
-		$response = $response->RequestOperationResult;
-		$responseCode = explode(",", $response)[0];
-		if ($responseCode != '0') {
-			$this->transactionFailed();
-			$this->newLog($response, AsanpardakhtException::getMessageByCode($response));
-			throw new AsanpardakhtException($response);
-		}
-		$this->refId = substr($response, 2);
-		$this->transactionSetRefId();
-	}
-
-
-	/**
-	 * Check user payment
+    /**
+	 * Verify payment from bank server
 	 *
 	 * @return bool
 	 *
 	 * @throws AsanpardakhtException
 	 */
-	protected function userPayment()
+	protected function verifyPayment()
 	{
-		$ReturningParams = Input::get('ReturningParams');
-		$ReturningParams = $this->decrypt($ReturningParams);
+        $username = $this->config->get('gateway.asanpardakht.username');
+        $password = $this->config->get('gateway.asanpardakht.password');
 
-		$paramsArray = explode(",", $ReturningParams);
-		$Amount = $paramsArray[0];
-		$SaleOrderId = $paramsArray[1];
-		$RefId = $paramsArray[2];
-		$ResCode = $paramsArray[3];
-		$ResMessage = $paramsArray[4];
-		$PayGateTranID = $paramsArray[5];
-		$RRN = $paramsArray[6];
-		$LastFourDigitOfPAN = $paramsArray[7];
+        $response = $this->client->get($this->verifyUrl, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'usr' => $username,
+                'pwd' => $password
+            ],
+        ]);
 
+        $response = json_decode($response->getBody()->getContents());
 
-		$this->trackingCode = $PayGateTranID;
-		$this->cardNumber = $LastFourDigitOfPAN;
-		$this->refId = $RefId;
+        if ($response->status != '200') {
+            $this->transactionFailed();
+            $this->newLog($response->status, AsanpardakhtException::getMessageByCode($response->status));
+            throw new AsanpardakhtException($response->status);
+        }
 
-
-		if ($ResCode == '0' || $ResCode == '00') {
-			return true;
-		}
-
-		$this->transactionFailed();
-		$this->newLog($ResCode, $ResMessage . " - " . AsanpardakhtException::getMessageByCode($ResCode));
-		throw new AsanpardakhtException($ResCode);
+        return true;
 	}
 
+    /**
+     * Settle user payment from bank server
+     *
+     * @return bool
+     *
+     * @throws AsanpardakhtException
+     */
+    protected function settlePayment()
+    {
+        $username = $this->config->get('gateway.asanpardakht.username');
+        $password = $this->config->get('gateway.asanpardakht.password');
 
-	/**
-	 * Verify and settle user payment from bank server
-	 *
-	 * @return bool
-	 *
-	 * @throws AsanpardakhtException
-	 * @throws SoapFault
-	 */
-	protected function verifyAndSettlePayment()
-	{
+        $params = [
+            'merchantConfigurationID' => $this->config->get('gateway.asanpardakht.merchantConfigId'),
+            'LocalInvoiceId' => $this->transactionId(),
+        ];
 
-		$username = $this->config->get('gateway.asanpardakht.username');
-		$password = $this->config->get('gateway.asanpardakht.password');
+        $response = $this->client->get($this->tranResultUrl, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'usr' => $username,
+                'pwd' => $password
+            ],
+            'json' => $params
+        ]);
 
-		$encryptedCredintials = $this->encrypt("{$username},{$password}");
-		$params = array(
-			'merchantConfigurationID' => $this->config->get('gateway.asanpardakht.merchantConfigId'),
-			'encryptedCredentials' => $encryptedCredintials,
-			'payGateTranID' => $this->trackingCode
-		);
+        $response = json_decode($response->getBody()->getContents());
 
+        if ($response->status != '200') {
+            //If fail, shaparak automatically do it in next 12 houres.
+        }
 
-		try {
-			$soap = new SoapClient($this->serverUrl);
-			$response = $soap->RequestVerification($params);
-			$response = $response->RequestVerificationResult;
+        $this->transactionSucceed();
 
-		} catch (\SoapFault $e) {
-			$this->transactionFailed();
-			$this->newLog('SoapFault', $e->getMessage());
-			throw $e;
-		}
+        return true;
+    }
 
-		if ($response != '500') {
-			$this->transactionFailed();
-			$this->newLog($response, AsanpardakhtException::getMessageByCode($response));
-			throw new AsanpardakhtException($response);
-		}
+    /**
+     * Check user payment
+     *
+     * @return bool
+     *
+     * @throws AsanpardakhtException
+     */
+    protected function userPayment()
+    {
+        $ReturningParams = $this->tranResult();
 
+        if ($ReturningParams->status && $ReturningParams->status != '200') {
+            $this->transactionFailed();
+            $this->newLog($ReturningParams->status, AsanpardakhtException::getMessageByCode($ReturningParams->status));
+            throw new AsanpardakhtException($ReturningParams->status);
+        }
 
-		try {
+        return true;
+    }
 
-			$response = $soap->RequestReconciliation($params);
-			$response = $response->RequestReconciliationResult;
+    /**
+     * Get transaction result
+     *
+     * @return bool
+     *
+     * @throws AsanpardakhtException
+     */
+    protected function tranResult()
+    {
+        $username = $this->config->get('gateway.asanpardakht.username');
+        $password = $this->config->get('gateway.asanpardakht.password');
 
-			if ($response != '600')
-				$this->newLog($response, AsanpardakhtException::getMessageByCode($response));
+        $params = [
+            'merchantConfigurationID' => $this->config->get('gateway.asanpardakht.merchantConfigId'),
+            'LocalInvoiceId' => $this->transactionId(),
+        ];
 
-		} catch (\SoapFault $e) {
-			//If fail, shaparak automatically do it in next 12 houres.
-		}
+        $response = $this->client->get($this->tranResultUrl, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'usr' => $username,
+                'pwd' => $password
+            ],
+            'json' => $params
+        ]);
 
+        $response = json_decode($response->getBody()->getContents());
 
-		$this->transactionSucceed();
+        if (($response->status && $response->status != '200') || $response->amount != $this->amount) {
+            $this->transactionFailed();
+            $this->newLog($response->status, AsanpardakhtException::getMessageByCode($response->status));
+            throw new AsanpardakhtException($response->status);
+        }
 
-		return true;
-	}
+        $this->refId = $response->refId;
+        $this->payGateTranId = $response->payGateTranID;
+        $this->trackingCode = $response->payGateTranID;
+        $this->cardNumber = $response->cardNumber;
 
+        return $response;
+    }
 
-	/**
-	 * Encrypt string by key and iv from config
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	private function encrypt($string = "")
-	{
+    /**
+     * Reverse transaction
+     *
+     * @return bool
+     *
+     * @throws AsanpardakhtException
+     */
+    protected function revers()
+    {
+        $returningParams = $this->tranResult();
 
-		$key = $this->config->get('gateway.asanpardakht.key');
-		$iv = $this->config->get('gateway.asanpardakht.iv');
+        $params = [
+            "merchantConfigurationId" => $this->config->get('gateway.asanpardakht.merchantConfigId'),
+            "payGateTranId" => $returningParams['payGateTranId'],
+        ];
 
-		try {
+        $response = $this->client->post('v1/Reverse', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'usr' => $this->config->get('gateway.asanpardakht.username'),
+                'pwd' => $this->config->get('gateway.asanpardakht.password')
+            ],
+            'json' => $params
+        ]);
 
-			$soap = new SoapClient("https://services.asanpardakht.net/paygate/internalutils.asmx?WSDL");
-			$params = array(
-				'aesKey' => $key,
-				'aesVector' => $iv,
-				'toBeEncrypted' => $string
-			);
+        $response = json_decode($response->getBody()->getContents());
 
-			$response = $soap->EncryptInAES($params);
-			return $response->EncryptInAESResult;
+        if ($response->status && $response->status != 200) {
+            $this->newLog($response->status, AsanpardakhtException::getMessageByCode($response->status));
+            throw new AsanpardakhtException($response->status);
+        }
 
-		} catch (\SoapFault $e) {
-			return "";
-		}
-	}
+        return true;
+    }
 
+    /**
+     * Cancel transaction
+     *
+     * @return bool
+     *
+     * @throws AsanpardakhtException
+     */
+    protected function cancel()
+    {
+        $returningParams = $this->tranResult();
 
-	/**
-	 * Decrypt string by key and iv from config
-	 *
-	 * @param string $string
-	 * @return string
-	 */
-	private function decrypt($string = "")
-	{
-		$key = $this->config->get('gateway.asanpardakht.key');
-		$iv = $this->config->get('gateway.asanpardakht.iv');
+        $params = [
+            "merchantConfigurationId" => $this->config->get('gateway.asanpardakht.merchantConfigId'),
+            "payGateTranId" => $returningParams['payGateTranId'],
+        ];
 
-		try {
+        $response = $this->client->post('v1/Cancel', [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'usr' => $this->config->get('gateway.asanpardakht.username'),
+                'pwd' => $this->config->get('gateway.asanpardakht.password')
+            ],
+            'json' => $params
+        ]);
 
-			$soap = new SoapClient("https://services.asanpardakht.net/paygate/internalutils.asmx?WSDL");
-			$params = array(
-				'aesKey' => $key,
-				'aesVector' => $iv,
-				'toBeDecrypted' => $string
-			);
+        $response = json_decode($response->getBody()->getContents());
 
-			$response = $soap->DecryptInAES($params);
-			return $response->DecryptInAESResult;
+        if ($response->status && $response->status != 200) {
+            $this->newLog($response->status, AsanpardakhtException::getMessageByCode($response->status));
+            throw new AsanpardakhtException($response->status);
+        }
 
-		} catch (\SoapFault $e) {
-			return "";
-		}
-	}
-
+        return true;
+    }
 }
