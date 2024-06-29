@@ -66,7 +66,7 @@ return [
         'terminalId'    => 000000000,
         'callback-url'  => '/'
     ],
-    
+
     //--------------------------------
     // Parsian gateway
     //--------------------------------
@@ -78,6 +78,8 @@ return [
     // Pasargad gateway
     //--------------------------------
     'pasargad' => [
+        'username' => '',
+        'password' => '',
         'terminalId'    => 000000,
         'merchantId'    => 000000,
         'certificate-path'    => storage_path('gateway/pasargad/certificate.xml'),
