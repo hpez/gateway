@@ -112,12 +112,14 @@ class GatewayResolver
 	 */
 	public function verify()
 	{
-		if (!$this->request->has('transaction_id') && !$this->request->has('iN'))
-			throw new InvalidRequestException;
 		if ($this->request->has('transaction_id')) {
 			$id = $this->request->get('transaction_id');
-		} else {
+		} elseif ($this->request->has('iN')) {
 			$id = $this->request->get('iN');
+		} elseif ($this->request->has('invoiceId')) {
+			$id = $this->request->get('invoiceId');
+		} else {
+			throw new InvalidRequestException;
 		}
 
 		$transaction = $this->getTable()->whereId($id)->first();
