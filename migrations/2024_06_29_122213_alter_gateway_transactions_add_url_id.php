@@ -4,7 +4,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Hpez\Gateway\Enum;
 
-class CreateGatewayTransactionsTable extends Migration
+class AlterGatewayTransactionsAddUrlId extends Migration
 {
 	function getTable()
 	{
