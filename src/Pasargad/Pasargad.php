@@ -192,7 +192,7 @@ class Pasargad extends PortAbstract implements PortInterface
         $this->login();
 
 	    $params = [
-            'invoice' => $this->transactionId(),
+            'invoice' => (string)$this->transactionId(),
             'urlId' => $this->urlId,
         ];
 
@@ -212,9 +212,9 @@ class Pasargad extends PortAbstract implements PortInterface
 			throw new PasargadErrorException(Enum::TRANSACTION_FAILED_TEXT, -1);
 		}
 
-		$this->refId = $response->referenceNumber;
+		$this->refId = Input::get('referenceNumber');
 		$this->transactionSetRefId();
-		$this->trackingCode = $response->trackId;
+		$this->trackingCode = Input::get('trackId');
 		$this->transactionSucceed();
 		$this->newLog(0, Enum::TRANSACTION_SUCCEED_TEXT);
 	}
