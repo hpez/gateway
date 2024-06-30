@@ -21,7 +21,7 @@ class Pasargad extends PortAbstract implements PortInterface
 	protected $checkTransactionUrl = 'https://pep.shaparak.ir/CheckTransactionResult.aspx';
 	protected $verifyUrl = 'api/payment/verify-transactions';
 	protected $refundUrl = 'https://pep.shaparak.ir/doRefund.aspx';
-	protected $baseUrl = 'https://pep.shaparak.ir/dorsa1';
+	protected $baseUrl = 'https://pep.shaparak.ir/dorsa1/';
 	protected $getTokenUrl = 'token/getToken';
 	protected $purchaseUrl = 'api/payment/purchase';
 	protected $redirectUrl = '';
