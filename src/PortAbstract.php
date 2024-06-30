@@ -46,6 +46,13 @@ abstract class PortAbstract
 	 */
 	protected $refId;
 
+    /**
+     * Url id
+     *
+     * @var string
+     */
+    protected $urlId;
+
 	/**
 	 * Amount in Rial
 	 *
@@ -203,6 +210,7 @@ abstract class PortAbstract
 		$this->transactionId = $transaction->id;
 		$this->amount = intval($transaction->price);
 		$this->refId = $transaction->ref_id;
+		$this->urlId = $transaction->url_id;
 	}
 
 	function getTimeId()
@@ -287,6 +295,19 @@ abstract class PortAbstract
 		]);
 
 	}
+
+    /**
+     * Update transaction urlId
+     *
+     * @return void
+     */
+    protected function transactionSetUrlId()
+    {
+        return $this->getTable()->whereId($this->transactionId)->update([
+            'url_id' => $this->urlId,
+        ]);
+
+    }
 
 	/**
 	 * New log

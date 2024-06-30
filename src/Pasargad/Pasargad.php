@@ -19,10 +19,12 @@ class Pasargad extends PortAbstract implements PortInterface
 	 */
 
 	protected $checkTransactionUrl = 'https://pep.shaparak.ir/CheckTransactionResult.aspx';
-	protected $verifyUrl = 'https://pep.shaparak.ir/Api/v1/Payment/VerifyPayment';
+	protected $verifyUrl = 'api/payment/verify-transactions';
 	protected $refundUrl = 'https://pep.shaparak.ir/doRefund.aspx';
-	protected $baseUrl = 'https://pep.shaparak.ir/Api/v1/Payment/';
-	protected $getTokenUrl = 'GetToken';
+	protected $baseUrl = 'https://pep.shaparak.ir/dorsa1';
+	protected $getTokenUrl = 'token/getToken';
+	protected $purchaseUrl = 'api/payment/purchase';
+	protected $redirectUrl = '';
 
 	protected $client;
 
@@ -66,7 +68,7 @@ class Pasargad extends PortAbstract implements PortInterface
 	 */
 	public function redirect()
 	{
-        header("Location: https://pep.shaparak.ir/payment.aspx?n=" . $this->token);
+        header("Location: " . $this->redirectUrl);
         die();
 	}
 
@@ -104,45 +106,20 @@ class Pasargad extends PortAbstract implements PortInterface
 		return $this->callbackUrl;
 	}
 
-	/**
-	 * Send pay request to parsian gateway
-	 *
-	 * @return bool
-	 *
-	 * @throws ParsianErrorException
-	 */
-	protected function sendPayRequest()
-	{
-		$this->newTransaction();
-
-        $params = [
-            'InvoiceNumber' => $this->transactionId(),
-            'InvoiceDate' => date("Y/m/d H:i:s"),
-            'TerminalCode' => $this->config->get('gateway.pasargad.terminalId'),
-            'MerchantCode' => $this->config->get('gateway.pasargad.merchantId'),
-            'Amount' => $this->amount,
-            'RedirectAddress' => $this->getCallback(),
-            'Timestamp' => date("Y/m/d H:i:s"),
-            'Action' => 1003,
-        ];
-
-        if ($this->cellNumber) {
-            $params['mobile'] = $this->cellNumber;
-        }
-
-        $data = json_encode($params);
-
-        $processor = new RSAProcessor($this->config->get('gateway.pasargad.certificate-path'), RSAKeyType::XMLFile);
-        $data = sha1($data, true);
-        $data = $processor->sign($data); // امضاي ديجيتال
-        $sign = base64_encode($data); // base64_encode
-
+    /**
+     * @return void
+     * @throws PasargadErrorException
+     */
+    protected function login()
+    {
         $response = $this->client->post($this->getTokenUrl, [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Sign' => $sign
             ],
-            'json' => $params
+            'json' => [
+                'username' => $this->config->get('gateway.pasargad.username'),
+                'password' => $this->config->get('gateway.pasargad.password')
+            ]
         ]);
 
         $response = json_decode($response->getBody()->getContents());
@@ -152,51 +129,92 @@ class Pasargad extends PortAbstract implements PortInterface
             throw new PasargadErrorException(Enum::TRANSACTION_FAILED_TEXT, -1);
         }
 
-        $this->token = $response->Token;
-	}
+        $this->token = $response->token;
+    }
 
 	/**
-	 * Verify payment
+	 * Send pay request to parsian gateway
 	 *
-	 * @throws ParsianErrorException
+	 * @return bool
+	 *
+	 * @throws PasargadErrorException
 	 */
-	protected function verifyPayment()
+	protected function sendPayRequest()
 	{
-	    $params = [
-            'InvoiceNumber' => $this->transactionId(),
-            'MerchantCode' => $this->config->get('gateway.pasargad.merchantId'),
-            'TerminalCode' => $this->config->get('gateway.pasargad.terminalId'),
-            'InvoiceDate' => Input::get('iD'),
-            'Amount' => $this->amount,
-            'TimeStamp' => date("Y/m/d H:i:s"),
+        $this->login();
+
+		$this->newTransaction();
+
+        $params = [
+            'amount' => $this->amount,
+            'callbackApi' => $this->getCallback(),
+            'description' => ' ',
+            'invoice' => $this->transactionId(),
+            'invoiceDate' => date("Y/m/d H:i:s"),
+            'serviceCode' => 8,
+            'serviceType' => 'PURCHASE',
+            'terminalNumber' => $this->config->get('gateway.pasargad.terminalId')
         ];
 
-		$processor = new RSAProcessor($this->config->get('gateway.pasargad.certificate-path'), RSAKeyType::XMLFile);
+        if ($this->cellNumber) {
+            $params['mobileNumber'] = $this->cellNumber;
+        }
 
-		$data = json_encode($params);
-		$data = sha1($data, true);
-		$data = $processor->sign($data);
-		$sign = base64_encode($data);
-
-        $response = $this->client->post($this->verifyUrl, [
+        $response = $this->client->post($this->purchaseUrl, [
             'headers' => [
                 'Content-Type' => 'application/json',
-                'Sign' => $sign
+                'Authorization' => "Bearer $this->token"
             ],
             'json' => $params
         ]);
 
         $response = json_decode($response->getBody()->getContents());
 
-		if (!$response->IsSuccess) {
+        if (!isset($response->resultCode) || $response->resultCode !== 0) {
+            $this->newLog(-1, Enum::TRANSACTION_FAILED_TEXT);
+            throw new PasargadErrorException(Enum::TRANSACTION_FAILED_TEXT, -1);
+        }
+
+        $this->urlId = $response->data->urlId;
+        $this->transactionSetUrlId();
+        $this->redirectUrl = $response->data->url;
+
+        return true;
+	}
+
+	/**
+	 * Verify payment
+	 *
+	 * @throws PasargadErrorException
+	 */
+	protected function verifyPayment()
+	{
+        $this->login();
+
+	    $params = [
+            'invoice' => $this->transactionId(),
+            'urlId' => $this->urlId,
+        ];
+
+        $response = $this->client->post($this->verifyUrl, [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Authorization' => "Bearer $this->token"
+            ],
+            'json' => $params
+        ]);
+
+        $response = json_decode($response->getBody()->getContents());
+
+        if (!isset($response->resultCode) || $response->resultCode !== 0) {
 			$this->newLog(-1, Enum::TRANSACTION_FAILED_TEXT);
 			$this->transactionFailed();
 			throw new PasargadErrorException(Enum::TRANSACTION_FAILED_TEXT, -1);
 		}
 
-		$this->refId = $response->ShaparakRefNumber;
+		$this->refId = $response->referenceNumber;
 		$this->transactionSetRefId();
-		$this->trackingCode = Input::get('tref');
+		$this->trackingCode = $response->trackId;
 		$this->transactionSucceed();
 		$this->newLog(0, Enum::TRANSACTION_SUCCEED_TEXT);
 	}
