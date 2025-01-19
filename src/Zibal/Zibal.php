@@ -127,14 +127,15 @@ class Zibal extends PortAbstract implements PortInterface
 	{
 		$this->newTransaction();
 
-		$fields = array(
+		$params = array(
 			'merchant' => $this->config->get('gateway.zibal.merchant-id'),
 			'amount' => $this->amount,
 			'callbackUrl' => $this->getCallback(),
 			'description' => $this->description ? $this->description : '',
+			'orderId' => $this->transactionId()
 		);
 
-		if ($this->cellNumber) {
+		if ($this->mobileNumber) {
             $params['mobile'] = $this->mobileNumber;
         }
 
@@ -152,7 +153,7 @@ class Zibal extends PortAbstract implements PortInterface
             throw new ZibalException(Enum::TRANSACTION_FAILED_TEXT, $response->result);
         }
 
-        $this->trackId = $response->data->trackId;
+        $this->trackId = $response->trackId;
         
         return true;
 	}
@@ -166,10 +167,10 @@ class Zibal extends PortAbstract implements PortInterface
 	 */
 	protected function verifyPayment()
 	{
-
+		$trackId = Input::get('trackId');
 		$params = [
             'merchant' => $this->config->get('gateway.zibal.merchant-id'),
-            'trackId' => $this->trackId,
+            'trackId' => $trackId,
         ];
 
         $response = $this->client->post('verify', [
@@ -187,9 +188,9 @@ class Zibal extends PortAbstract implements PortInterface
 			throw new ZibalException(Enum::TRANSACTION_FAILED_TEXT, $response->result);
 		}
 
-		$this->refId = Input::get('refNumber');
+		$this->refId = $response->refNumber;
 		$this->transactionSetRefId();
-		$this->trackingCode = $this->trackId;
+		$this->trackingCode = $trackId;
 		$this->transactionSucceed();
 		$this->newLog(0, Enum::TRANSACTION_SUCCEED_TEXT);
 		return true;

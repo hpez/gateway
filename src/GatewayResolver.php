@@ -120,6 +120,8 @@ class GatewayResolver
 			$id = $this->request->get('iN');
 		} elseif ($this->request->has('invoiceId')) {
 			$id = $this->request->get('invoiceId');
+		} elseif ($this->request->get('orderId')) {
+			$id = $this->request->get('orderId');
 		} else {
 			throw new InvalidRequestException;
 		}
