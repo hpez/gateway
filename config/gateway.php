@@ -21,6 +21,10 @@ return [
         'description'  => 'description',
     ],
 
+    'zibal' => [
+        'merchant-id'  => 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx',
+    ]
+
     //--------------------------------
     // Mellat gateway
     //--------------------------------

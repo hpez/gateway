@@ -18,6 +18,7 @@ use Hpez\Gateway\Exceptions\RetryException;
 use Hpez\Gateway\Exceptions\PortNotFoundException;
 use Hpez\Gateway\Exceptions\InvalidRequestException;
 use Hpez\Gateway\Exceptions\NotFoundTransactionException;
+use Hpez\Gateway\Zarinpal\Zibal;
 use Illuminate\Support\Facades\DB;
 
 class GatewayResolver
@@ -73,6 +74,7 @@ class GatewayResolver
 			Enum::IRANKISH,
 			Enum::SADERAT,
 			Enum::SAMANMOBILE,
+			Enum::ZIBAL
 		];
 	}
 
@@ -168,6 +170,8 @@ class GatewayResolver
 			$name = Enum::SAMANMOBILE;
 		} elseif ($port InstanceOf Pasargad) {
 			$name = Enum::PASARGAD;
+		} elseif ($port instanceof Zibal) {
+			$name = Enum::ZIBAL;
 		} elseif (in_array(strtoupper($port), $this->getSupportedPorts())) {
 			$port = ucfirst(strtolower($port));
 			$name = strtoupper($port);
