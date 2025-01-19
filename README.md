@@ -17,6 +17,7 @@ Supported gatways:
  9. PAY.IR
 10. SADERAT
 11. IRANKISH
+12. ZIBAL
  
 ## Install
  
