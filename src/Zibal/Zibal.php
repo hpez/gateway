@@ -1,6 +1,6 @@
 <?php
 
-namespace Hpez\Gateway\Zarinpal;
+namespace Hpez\Gateway\Zibal;
 
 use DateTime;
 use Illuminate\Support\Facades\Input;

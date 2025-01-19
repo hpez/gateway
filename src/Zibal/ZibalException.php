@@ -1,10 +1,10 @@
 <?php
 
-namespace Hpez\Gateway\Zarinpal;
+namespace Hpez\Gateway\Zibal;
 
 use Hpez\Gateway\Exceptions\BankException;
 
-class ZarinpalException extends BankException
+class ZibalException extends BankException
 {
 	public static $errors = array(
 		-1 => 'اطلاعات ارسال شده ناقص است.',

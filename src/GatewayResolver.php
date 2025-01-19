@@ -18,7 +18,7 @@ use Hpez\Gateway\Exceptions\RetryException;
 use Hpez\Gateway\Exceptions\PortNotFoundException;
 use Hpez\Gateway\Exceptions\InvalidRequestException;
 use Hpez\Gateway\Exceptions\NotFoundTransactionException;
-use Hpez\Gateway\Zarinpal\Zibal;
+use Hpez\Gateway\Zibal\Zibal;
 use Illuminate\Support\Facades\DB;
 
 class GatewayResolver
