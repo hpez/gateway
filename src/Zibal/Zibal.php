@@ -180,7 +180,7 @@ class Zibal extends PortAbstract implements PortInterface
             'json' => $params
         ]);
 
-        $response = json_decode($response->getBody()->getContents());
+        $response = json_decode($response->getBody()->getContents(), false);
 
         if (!isset($response->result) || $response->result !== 100) {
 			$this->newLog(-1, Enum::TRANSACTION_FAILED_TEXT);
